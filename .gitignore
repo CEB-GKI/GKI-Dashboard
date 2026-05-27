@@ -1,0 +1,12 @@
+node_modules/
+dist/
+__pycache__/
+*.pyc
+cache/
+venv/
+env/
+.env
+scratch/
+*.xlsx
+*.xls
+

@@ -1,0 +1,20 @@
+export const updateNotes = [
+  {
+    timestamp: '26 Mei 2026, 18:30 WIB',
+    changes: [
+      'Optimalisasi arsitektur rendering: Penerapan sistem Background-Cached Tab yang menghilangkan lag dan *loading* saat berpindah menu (perpindahan instan).',
+      'Refactoring & Kerapian Kode (Clean Code): Ekstraksi fitur Ekspor PDF dan PPTX menjadi Global Utility tunggal, membersihkan 500+ baris duplikasi kode di berbagai halaman.'
+    ]
+  },
+  {
+    timestamp: '26 Mei 2026, 18:00 WIB',
+    changes: [
+      'Penyeragaman format nama file hasil export PDF dan PPTX menjadi GKI_(Nama GKI)_(Bagian).',
+      'Peningkatan fitur Export PDF untuk menghasilkan dokumen multi-halaman (setiap grafik/tabel dipisah per halaman).',
+      'Penambahan tombol Export PDF dan PPTX pada halaman Executive Summary (Analisa).',
+      'Pembaruan istilah pada Analisa Komitmen Finansial menjadi "Persembahan Kebaktian" & "Persembahan Luar Kebaktian".',
+      'Pembaruan logika filter sumber data berdasarkan nomor urut indikator pada Analisa Komitmen Finansial.',
+      'Perbaikan sumber data indikator (sheet Mutasi) pada Analisa Pertumbuhan Jemaat.'
+    ]
+  }
+];

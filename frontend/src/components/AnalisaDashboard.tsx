@@ -110,7 +110,6 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
   const [analisa2Filter, setAnalisa2Filter] = useState('All');
   const [analisa13Time, setAnalisa13Time] = useState<'1m'|'3m'|'1y'|'all'>('1y');
   const [analisa13Compare, setAnalisa13Compare] = useState(false);
-  const [analisa13Accum, setAnalisa13Accum] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
 
   const exportPDF = () => _exportPDF(dashboardRef, 'Waha', 'Analisa');
@@ -858,70 +857,88 @@ const analisa3 = useMemo(() => {
           grouped[key] = { 
             name: key, 
             Kolekte: 0, Syukur: 0, 
-            KolektePrev: 0, SyukurPrev: 0,
-            KolekteAccum: 0, SyukurAccum: 0,
-            KolekteAccumPrev: 0, SyukurAccumPrev: 0
+            KolektePrev: 0, SyukurPrev: 0
           };
         }
 
         // Kolekte = No 1 to 8, Syukur = No 9 to 13
         if (row.No >= 1 && row.No <= 8) {
-          if (analisa13Accum) {
-            grouped[key].KolekteAccum += (row['Akumulasi'] || 0);
-            grouped[key].KolekteAccumPrev += (row['Akumulasi (Tahun Lalu)'] || 0);
-          } else {
-            grouped[key].Kolekte += (row['Penerimaan'] || 0);
-            grouped[key].KolektePrev += (row['Penerimaan (Tahun Lalu)'] || 0);
-          }
+          grouped[key].Kolekte += (row['Penerimaan'] || 0);
+          grouped[key].KolektePrev += (row['Penerimaan (Tahun Lalu)'] || 0);
         } else if (row.No >= 9 && row.No <= 13) {
-          if (analisa13Accum) {
-            grouped[key].SyukurAccum += (row['Akumulasi'] || 0);
-            grouped[key].SyukurAccumPrev += (row['Akumulasi (Tahun Lalu)'] || 0);
-          } else {
-            grouped[key].Syukur += (row['Penerimaan'] || 0);
-            grouped[key].SyukurPrev += (row['Penerimaan (Tahun Lalu)'] || 0);
-          }
+          grouped[key].Syukur += (row['Penerimaan'] || 0);
+          grouped[key].SyukurPrev += (row['Penerimaan (Tahun Lalu)'] || 0);
         }
       });
       
       return Object.values(grouped).sort((a: any, b: any) => a.name.localeCompare(b.name));
     };
 
+    const formatPeriode = (rawKey: any) => {
+      const key = String(rawKey || '');
+      if (!key) return '';
+      if (analisa13Time === '1m') {
+        const [y, m] = key.split('-');
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return `${months[parseInt(m)-1]} ${y}`;
+      } else if (analisa13Time === 'all') {
+        const d = new Date(key);
+        if (!isNaN(d.getTime())) {
+          const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+          return `${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+      }
+      return key;
+    };
+
     const chartData = groupData(analisa13Time);
-    const hasData = chartData.some((d: any) => d.Kolekte > 0 || d.Syukur > 0 || d.KolekteAccum > 0 || d.SyukurAccum > 0);
+    const hasData = chartData.some((d: any) => d.Kolekte > 0 || d.Syukur > 0);
 
     let isWarning = false;
     let highestGapType = '';
     let highestGapValue = 0;
     let highestGapDate = '';
     
-    if (chartData.length > 0 && analisa13Compare) {
-      chartData.forEach(d => {
-        const val1 = analisa13Accum ? d.KolekteAccum : d.Kolekte;
-        const prev1 = analisa13Accum ? d.KolekteAccumPrev : d.KolektePrev;
-        const gap1 = val1 - prev1;
-        
-        const val2 = analisa13Accum ? d.SyukurAccum : d.Syukur;
-        const prev2 = analisa13Accum ? d.SyukurAccumPrev : d.SyukurPrev;
-        const gap2 = val2 - prev2;
-
-        if (Math.abs(gap1) > Math.abs(highestGapValue)) {
-          highestGapValue = gap1;
-          highestGapType = 'Persembahan Kebaktian';
-          highestGapDate = d.name;
+    if (chartData.length > 0) {
+      if (analisa13Compare) {
+        chartData.forEach(d => {
+          const gap1 = d.Kolekte - d.KolektePrev;
+          const gap2 = d.Syukur - d.SyukurPrev;
+          if (Math.abs(gap1) > Math.abs(highestGapValue)) {
+            highestGapValue = gap1;
+            highestGapType = 'Persembahan Kebaktian';
+            highestGapDate = formatPeriode(d.name);
+          }
+          if (Math.abs(gap2) > Math.abs(highestGapValue)) {
+            highestGapValue = gap2;
+            highestGapType = 'Persembahan Luar Kebaktian';
+            highestGapDate = formatPeriode(d.name);
+          }
+        });
+      } else if (chartData.length >= 2) {
+        for (let i = 1; i < chartData.length; i++) {
+          const d = chartData[i];
+          const prevD = chartData[i-1];
+          const gap1 = d.Kolekte - prevD.Kolekte;
+          const gap2 = d.Syukur - prevD.Syukur;
+          if (Math.abs(gap1) > Math.abs(highestGapValue)) {
+            highestGapValue = gap1;
+            highestGapType = 'Persembahan Kebaktian';
+            highestGapDate = `${formatPeriode(prevD.name)} ke ${formatPeriode(d.name)}`;
+          }
+          if (Math.abs(gap2) > Math.abs(highestGapValue)) {
+            highestGapValue = gap2;
+            highestGapType = 'Persembahan Luar Kebaktian';
+            highestGapDate = `${formatPeriode(prevD.name)} ke ${formatPeriode(d.name)}`;
+          }
         }
-        if (Math.abs(gap2) > Math.abs(highestGapValue)) {
-          highestGapValue = gap2;
-          highestGapType = 'Persembahan Luar Kebaktian';
-          highestGapDate = d.name;
-        }
-      });
+      }
     }
 
     const formatCurrency = (val: number) => `${(val / 1000000).toLocaleString('id-ID', {maximumFractionDigits: 1})} Jt`;
 
     const table = (
-      <div style={{ overflowX: 'auto', width: '100%' }}>
+      <div style={{ overflowX: 'auto', width: '100%', marginTop: '30px' }}>
         <table className="data-table" style={{ width: '100%', minWidth: '600px' }}>
           <thead>
             <tr>
@@ -935,11 +952,11 @@ const analisa3 = useMemo(() => {
           <tbody>
             {chartData.map((row: any, i: number) => (
               <tr key={i}>
-                <td>{row.name}</td>
-                <td>{formatCurrency(analisa13Accum ? row.KolekteAccum : row.Kolekte)}</td>
-                {analisa13Compare && <td>{formatCurrency(analisa13Accum ? row.KolekteAccumPrev : row.KolektePrev)}</td>}
-                <td>{formatCurrency(analisa13Accum ? row.SyukurAccum : row.Syukur)}</td>
-                {analisa13Compare && <td>{formatCurrency(analisa13Accum ? row.SyukurAccumPrev : row.SyukurPrev)}</td>}
+                <td>{formatPeriode(row.name)}</td>
+                <td>{formatCurrency(row.Kolekte)}</td>
+                {analisa13Compare && <td>{formatCurrency(row.KolektePrev)}</td>}
+                <td>{formatCurrency(row.Syukur)}</td>
+                {analisa13Compare && <td>{formatCurrency(row.SyukurPrev)}</td>}
               </tr>
             ))}
           </tbody>
@@ -949,7 +966,7 @@ const analisa3 = useMemo(() => {
 
     const chart = (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+        <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Rentang Waktu:</label>
             <select 
@@ -974,31 +991,21 @@ const analisa3 = useMemo(() => {
             />
             Bandingkan Tahun Sebelumnya
           </label>
-
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '6px 12px', borderRadius: '6px', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
-            <input 
-              type="checkbox" 
-              checked={analisa13Accum} 
-              onChange={(e) => setAnalisa13Accum(e.target.checked)} 
-              style={{ cursor: 'pointer' }}
-            />
-            Sisi Akumulasi
-          </label>
         </div>
         
         <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-          <LineChart data={chartData}>
+          <LineChart data={chartData} margin={{ bottom: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-            <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
+            <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" tickFormatter={formatPeriode} />
             <YAxis stroke="rgba(255,255,255,0.5)" tickFormatter={(val: any) => formatCurrency(val)} width={80} />
-            <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} formatter={(val: any) => `Rp ${Number(val).toLocaleString('id-ID')}`} />
-            <Legend content={UniversalLegend} />
+            <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} formatter={(val: any) => `Rp ${Number(val).toLocaleString('id-ID')}`} labelFormatter={formatPeriode} />
+            <Legend content={UniversalLegend} wrapperStyle={{ paddingTop: '20px' }} />
             
-            <Line type="monotone" dataKey={analisa13Accum ? "KolekteAccum" : "Kolekte"} name="Persembahan Kebaktian" stroke={COLORS.green} strokeWidth={3} />
-            {analisa13Compare && <Line type="monotone" dataKey={analisa13Accum ? "KolekteAccumPrev" : "KolektePrev"} name="Kebaktian (Tahun Lalu)" stroke={COLORS.green} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
+            <Line type="monotone" dataKey="Kolekte" name="Persembahan Kebaktian" stroke={COLORS.green} strokeWidth={3} />
+            {analisa13Compare && <Line type="monotone" dataKey="KolektePrev" name="Kebaktian (Tahun Lalu)" stroke={COLORS.green} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
             
-            <Line type="monotone" dataKey={analisa13Accum ? "SyukurAccum" : "Syukur"} name="Persembahan Luar Kebaktian" stroke={COLORS.purple} strokeWidth={3} />
-            {analisa13Compare && <Line type="monotone" dataKey={analisa13Accum ? "SyukurAccumPrev" : "SyukurPrev"} name="Luar Kebaktian (Tahun Lalu)" stroke={COLORS.purple} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
+            <Line type="monotone" dataKey="Syukur" name="Persembahan Luar Kebaktian" stroke={COLORS.purple} strokeWidth={3} />
+            {analisa13Compare && <Line type="monotone" dataKey="SyukurPrev" name="Luar Kebaktian (Tahun Lalu)" stroke={COLORS.purple} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -1008,15 +1015,19 @@ const analisa3 = useMemo(() => {
     
     let dynamicText = `Grafik menampilkan perbandingan tren keuangan untuk ${analisa13Time === '1y' ? 'tahunan' : analisa13Time === '3m' ? 'per kuartal' : analisa13Time === '1m' ? 'bulanan' : 'semua data'}.`;
     
-    if (analisa13Compare && highestGapDate) {
+    if (highestGapDate) {
       const dir = highestGapValue > 0 ? 'kenaikan' : 'penurunan';
-      dynamicText += ` Perbedaan paling signifikan dibandingkan tahun lalu terjadi pada ${highestGapDate} di pos ${highestGapType} dengan ${dir} sebesar ${formatCurrency(Math.abs(highestGapValue))}.`;
+      if (analisa13Compare) {
+        dynamicText += ` Perbedaan paling signifikan dibandingkan tahun lalu terjadi pada ${highestGapDate} di pos ${highestGapType} dengan ${dir} sebesar ${formatCurrency(Math.abs(highestGapValue))}.`;
+      } else {
+        dynamicText += ` Perubahan paling ekstrem terjadi pada periode ${highestGapDate}, di mana pos ${highestGapType} mengalami ${dir} drastis sebesar ${formatCurrency(Math.abs(highestGapValue))}.`;
+      }
     }
       
     const alertText = isWarning ? `Peringatan: Tren persembahan mengalami penurunan yang signifikan.` : null;
 
     return { sources: ['Data Keuangan (Penerimaan)'], isHidden: !hasData, title, icon: <TrendingUp color={COLORS.green} />, description, dynamicText, chart, table, alertText, status: isWarning ? 'warning' : 'good' };
-  }, [data, yearlyData, analisa13Time, analisa13Compare, analisa13Accum]);
+  }, [data, yearlyData, analisa13Time, analisa13Compare]);
 
   const analisa18 = useMemo(() => {
     const title = 'Indeks Lingkaran Tertutup (Closed-Circle Welcoming Index)';

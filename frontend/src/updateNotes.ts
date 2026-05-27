@@ -2,8 +2,11 @@ export const updateNotes = [
   {
     timestamp: '28 Mei 2026',
     changes: [
+      'Perbaikan nama periode menjadi berwujud bulan & tahun (mis. April 2025) pada tabel Perbandingan Penerimaan Kebaktian dan Luar Kebaktian.',
+      'Otomatisasi pengenalan dan highlight perbedaan terbesar pada tren (kenaikan/penurunan terdalam antar periode) untuk Perbandingan Penerimaan.',
+      'Penambahan ruang/margin pada legenda chart Perbandingan Penerimaan untuk mencegah tabrakan dengan tabel ringkasan.',
+      'Penghapusan tombol fitur sisi akumulasi untuk menyederhanakan antarmuka sesuai preferensi terbaru.',
       'Perbaikan bug legenda tertukar (sinkronisasi 100% grafik dan legenda) untuk chart Konversi Pengunjung Baru.',
-      'Refactor total fitur Perbandingan Penerimaan Kebaktian dan Luar Kebaktian dengan filter 1 bulan, 3 bulan, 1 tahun, serta perbandingan tahunan dan mode sisi akumulasi.',
       'Otomatisasi penuh pembaruan catatan rilis pasca-build oleh AI.',
       'Konsolidasi modul Missing Middle ke Kesenjangan Generasi dengan sinkronisasi urutan legenda.',
       'Penghapusan analisa Jemaat Musiman dan Giving Fatigue sesuai kebutuhan operasional.'

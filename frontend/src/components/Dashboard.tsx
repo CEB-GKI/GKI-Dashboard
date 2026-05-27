@@ -8,7 +8,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend
+  Legend,
+  Cell
 } from 'recharts';
 import { Download, Filter } from 'lucide-react';
 import { UangDashboard } from './UangDashboard';
@@ -644,20 +645,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
               </div>
               
               {chartKeys.length > 0 ? (
-                <div style={{ width: '100%', height: '400px' }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-                      <XAxis dataKey="name" tickFormatter={d => { const fmt = formatXAxis(d); return typeof fmt === 'string' ? fmt.split(' - ')[0] : fmt; }} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dy={10} />
-                      <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dx={-10} />
-                      <Tooltip shared={!(sheetName === 'Perayaan' && perayaanFilter !== 'Semua Perayaan' && !perayaanCompare1 && !perayaanCompare2 && !perayaanCompare3)} contentStyle={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)', color: '#fff' }} itemStyle={{ color: '#fff' }} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} formatter={(value: any, name: any) => [value, formatChartKey(name as string, sheetName, false)]} labelFormatter={(label) => formatXAxis(label)} />
-                      <Legend wrapperStyle={{ paddingTop: '20px' }} formatter={(value: any) => formatChartKey(value as string, sheetName, false)} />
-                      {chartActiveKeys.map((key, idx) => (
-                        <Bar key={`bar-${key}`} dataKey={key} fill={getColorForKey(key, idx)} fillOpacity={key.includes(compareMetric) && compareMetric !== '' ? 0.6 : 1} radius={[4, 4, 0, 0]} />
-                      ))}
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                (() => {
+                  const isSingleEvent = sheetName === 'Perayaan' && perayaanFilter !== 'Semua Perayaan' && !perayaanCompare1 && !perayaanCompare2 && !perayaanCompare3 && chartData.length === 1;
+                  
+                  let displayChartData = chartData;
+                  
+                  if (isSingleEvent) {
+                    displayChartData = chartActiveKeys.map(key => ({
+                      name: key,
+                      value: chartData[0][key] || 0
+                    }));
+                  }
+
+                  return (
+                    <div style={{ width: '100%', height: '400px' }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={displayChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                          <XAxis 
+                             dataKey="name" 
+                             tickFormatter={d => isSingleEvent ? formatChartKey(d, sheetName, false) : (typeof formatXAxis(d) === 'string' ? (formatXAxis(d) as string).split(' - ')[0] : formatXAxis(d))} 
+                             stroke="rgba(255,255,255,0.3)" 
+                             tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: isSingleEvent ? 11 : undefined }} 
+                             axisLine={false} 
+                             tickLine={false} 
+                             dy={10} 
+                          />
+                          <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dx={-10} />
+                          <Tooltip 
+                            shared={true} 
+                            contentStyle={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)', color: '#fff' }} 
+                            itemStyle={{ color: '#fff' }} 
+                            cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} 
+                            formatter={(value: any, name: any) => isSingleEvent ? [value, formatXAxis(chartData[0].name)] : [value, formatChartKey(name as string, sheetName, false)]} 
+                            labelFormatter={(label) => isSingleEvent ? formatChartKey(label as string, sheetName, false) : formatXAxis(label)} 
+                          />
+                          {!isSingleEvent && <Legend wrapperStyle={{ paddingTop: '20px' }} formatter={(value: any) => formatChartKey(value as string, sheetName, false)} />}
+                          {isSingleEvent ? (
+                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                              {displayChartData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={getColorForKey(entry.name, index)} />
+                              ))}
+                            </Bar>
+                          ) : (
+                            chartActiveKeys.map((key, idx) => (
+                              <Bar key={`bar-${key}`} dataKey={key} fill={getColorForKey(key, idx)} fillOpacity={key.includes(compareMetric) && compareMetric !== '' ? 0.6 : 1} radius={[4, 4, 0, 0]} />
+                            ))
+                          )}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  );
+                })()
               ) : (
                 <div style={{ width: '100%', padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', marginTop: '16px' }}>
                   <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data yang dapat ditampilkan pada grafik.</p>

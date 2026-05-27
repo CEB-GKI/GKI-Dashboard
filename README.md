@@ -8,20 +8,7 @@ Aplikasi dashboard modern yang dirancang khusus untuk memvisualisasikan, mengana
 
 - **📊 Visualisasi Komprehensif & Interaktif**:
   Menampilkan grafik interaktif untuk berbagai aspek jemaat secara *real-time*:
-  - **Executive Summary & Analisa**: Analisis tingkat lanjut menggunakan algoritma pemrosesan agregasi lintas-sheet untuk mendapatkan *insight* mendalam:
-    1. **Tren Kehadiran Jemaat & Simpatisan**: Rasio keaktifan anggota jemaat terhadap simpatisan (pencari gereja) dari waktu ke waktu.
-    2. **Pertumbuhan Kehadiran vs Tahun Sebelumnya**: Mengukur persentase pertumbuhan jemaat tahun ini terhadap tahun lalu.
-    3. **Tren Keterlibatan Berdasarkan Gender**: Memantau keseimbangan pelayanan dan kehadiran pria dan wanita.
-    4. **Rasio Kehadiran On-Site terhadap Kapasitas**: Evaluasi utilisasi gedung dan identifikasi kebutuhan penambahan sesi ibadah.
-    5. **Konversi Pengunjung Baru**: Mengukur efektivitas penyambutan dengan melihat rasio kehadiran simpatisan/pengunjung.
-    6. **Kesenjangan Generasi dalam Kebaktian**: Menganalisa dominasi kelompok umur dan mendeteksi krisis *missing middle* (generasi yang hilang).
-    7. **Kinerja Finansial Umum**: Pemantauan stabilitas persembahan syukur dan persepuluhan rata-rata mingguan.
-    8. **Kinerja Lintas Kategori**: Menganalisa korelasi antara kehadiran di berbagai jenis ibadah dengan kontribusi keuangan.
-    9. **Pertumbuhan Persembahan**: Menilai kesehatan finansial jemaat berdasarkan tren penerimaan rutin mingguan.
-    10. **Rasio Kontributor (Estimasi)**: Perkiraan partisipasi finansial jemaat yang hadir.
-    11. **Rasio Kehadiran Khusus vs Umum**: Perbandingan tingkat antusiasme perayaan gerejawi dengan ibadah reguler.
-    12. **Konsistensi Partisipasi Pelayan**: Memantau rasio pelayan yang bertugas (penatua, pemusik) dengan total kehadiran jemaat.
-    13. **Perbandingan Penerimaan (Kebaktian vs Luar Kebaktian)**: Melacak anomali persilangan (*crossover*) antara penerimaan rutin dan non-rutin beserta agregasinya.
+  - **Executive Summary & Analisa**: Modul dashboard cerdas yang mengagregasi data dari seluruh *sheet* untuk menghasilkan deteksi anomali, tren jangka panjang, dan peringatan dini (*early warning system*). (Lihat detail selengkapnya di bagian **Modul Analisa & Algoritma** di bawah).
   - **Kehadiran Kebaktian**: Analisis mendalam per ibadah (Minggu, Kategorial, Persekutuan, Perayaan).
   - **Persidangan & Rapat**: Statistik kehadiran peserta rapat majelis jemaat.
   - **Keuangan (UANG)**: Analisis komitmen persembahan, akumulasi penerimaan bulanan, dan perbandingan dengan tahun lalu.
@@ -43,6 +30,57 @@ Aplikasi dashboard modern yang dirancang khusus untuk memvisualisasikan, mengana
 
 - **⚙️ Live Google Sheets Parser (FastAPI)**:
   Membaca dan memproses spreadsheet Google Sheets secara live. Dilengkapi fitur **fallback cache lokal** (`cache/data.json`) sehingga aplikasi tetap dapat berjalan secara luring (*offline*) apabila koneksi internet terputus.
+
+---
+
+## 📈 Modul Analisa & Algoritma
+
+Bagian ini khusus menjelaskan berbagai modul kecerdasan buatan (algoritma) yang digunakan pada halaman **Executive Summary (Analisa)**. Dashboard secara otomatis memproses silang berbagai metrik untuk menghasilkan rekomendasi dan mendeteksi peringatan dini:
+
+1. **Perbandingan Jumlah Anggota dan Kehadiran Jemaat di Kebaktian**
+   - **Sumber Data**: `Data DIRI (Massa)` dan `Kehadiran Keb. Kategorial`.
+   - **Algoritma**: Membandingkan jumlah anggota riil terdaftar pada setiap kelompok usia (Anak, Remaja, Pemuda, Dewasa, Lansia) di data DIRI dengan rata-rata total kehadiran mereka di kebaktian kategorial masing-masing.
+   - **Peringatan (Alert)**: Jika rasio kehadiran dari kelompok usia tertentu anjlok di bawah 50% dari total populasinya.
+
+2. **Kesenjangan Generasi & Missing Middle**
+   - **Sumber Data**: `Data DIRI (Usia)`.
+   - **Algoritma**: Mengekstrak data demografi usia spesifik: Pemuda (20-30), Dewasa Muda/Keluarga Muda (31-39), dan Lansia (>60). Algoritma menghitung rasio perbandingan Lansia terhadap Pemuda, serta melacak laju pertumbuhan/penyusutan Keluarga Muda.
+   - **Peringatan (Alert)**: Jika rasio Pemuda terhadap Lansia < 0.5 (Krisis Regenerasi), atau jika populasi Keluarga Muda (31-39 tahun) menyusut drastis lebih dari 10% (Fenomena *Missing Middle*).
+
+3. **Beban Layan Guru Sekolah Minggu (GSM)**
+   - **Sumber Data**: `TENAGA (Rasio GSM)` dan `Kehadiran Keb. Kategorial`.
+   - **Algoritma**: Membandingkan jumlah Guru Sekolah Minggu yang tersedia dengan rata-rata kehadiran anak sekolah minggu di kebaktian kategorial, untuk mendapatkan rasio 1 Guru menangani X Anak.
+   - **Peringatan (Alert)**: Terpicu apabila beban pelayanan guru melampaui batas wajar (1 Guru menangani >10 Anak secara rata-rata).
+
+4. **Sumber Pertumbuhan Jemaat (Migrasi vs Organik)**
+   - **Sumber Data**: `Mutasi (Pertambahan)`.
+   - **Algoritma**: Memilah metrik penambahan anggota baru dari dua sumber utama: Atestasi Masuk (Migrasi dari gereja lain) berbanding dengan Baptis Anak + Sidi (Pertumbuhan Organik/Lahir Baru). 
+   - **Peringatan (Alert)**: Jika selama dua tahun berturut-turut, penambahan jemaat dari atestasi masuk mendominasi (1.5x lipat lebih besar) dibandingkan pertumbuhan organik.
+
+5. **Stagnasi Tenaga Pelayanan (Volunteer)**
+   - **Sumber Data**: `Data DIRI (Usia & Gender)` dan `TENAGA (Rekap Volunteer)`.
+   - **Algoritma**: Membandingkan garis tren laju pertumbuhan jemaat secara umum dengan ketersediaan jumlah aktivis yang melayani.
+   - **Peringatan (Alert)**: Jika laju pertumbuhan jemaat melebihi 5% secara akumulatif, namun ketersediaan aktivis stagnan atau minus, menandakan tingginya ancaman kelelahan (*burnout*) bagi pelayan yang ada.
+
+6. **Indeks "Gereja Penonton" (Keterlibatan)**
+   - **Sumber Data**: `Kehadiran Keb. Minggu` dan `TENAGA (Rekap Aktivis)`.
+   - **Algoritma**: Mengalkulasi persentase jumlah warga sidi yang terlibat aktif sebagai pelayan dibandingkan dengan jumlah rata-rata jemaat yang duduk beribadah di hari Minggu.
+   - **Peringatan (Alert)**: Terpicu jika rasio keterlibatan pelayanan terus mengalami penyusutan selama tiga tahun berturut-turut.
+
+7. **Rasio Konversi Pengunjung Baru**
+   - **Sumber Data**: `Kehadiran Keb. Minggu (Simpatisan)` dan `Mutasi Jemaat`.
+   - **Algoritma**: Menyandingkan tren naiknya jumlah simpatisan/tamu yang mampir ke gereja dengan jumlah anggota yang pada akhirnya mau mendaftar sebagai warga jemaat tetap (atestasi masuk/baptis dewasa).
+   - **Peringatan (Alert)**: Jika volume simpatisan meningkat drastis namun pendaftaran anggota tetap justru stagnan atau nihil.
+
+8. **Perbandingan Penerimaan Kebaktian dan Luar Kebaktian**
+   - **Sumber Data**: `UANG (Penerimaan)`.
+   - **Algoritma**: Mengelompokkan nomor akun berdasarkan kategori "Persembahan Kebaktian" (No. 1 s/d 8) dan "Persembahan Luar Kebaktian" (No. 9 s/d 13). Mensimulasikan persilangan performa antarkeduanya dalam berbagai rentang waktu (1 bulan, 3 bulan, tahunan).
+   - **Peringatan (Alert)**: Mendeteksi tren penurunan yang paling tajam pada pos persembahan tertentu.
+
+9. **Indeks Lingkaran Tertutup (Closed-Circle Welcoming Index)**
+   - **Sumber Data**: `Kehadiran Keb. Minggu`.
+   - **Algoritma**: Mengukur persentase simpatisan (tamu tak dikenal/belum mendaftar) terhadap total seluruh jemaat ibadah minggu. Digunakan untuk mengukur apakah gereja telah menjadi komunitas yang terlalu inklusif atau ramah terhadap pendatang luar.
+   - **Peringatan (Alert)**: Terpicu jika rasio kehadiran simpatisan turun di bawah 3% dari total audiens.
 
 ---
 

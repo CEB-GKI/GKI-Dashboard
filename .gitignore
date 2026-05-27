@@ -10,4 +10,5 @@ scratch/
 *.xlsx
 *.xls
 push.bat
+buat_backup.bat
 

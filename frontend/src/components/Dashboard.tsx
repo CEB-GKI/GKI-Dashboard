@@ -244,7 +244,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
         } else if (selectedEvents.length === 1) {
           activeMetrics.forEach(metric => {
             const lower = metric.toLowerCase();
-            if (!lower.includes('total') && !lower.includes('on-site')) {
+            if (!lower.includes('total') && !lower.includes('on-site') && !lower.endsWith(' jumlah')) {
               grouped[groupKey][metric] = parseFloat(row[metric]) || 0;
             }
           });

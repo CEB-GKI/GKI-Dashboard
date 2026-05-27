@@ -2,6 +2,8 @@ export const updateNotes = [
   {
     timestamp: '28 Mei 2026',
     changes: [
+      'Perbaikan bug legenda tertukar (sinkronisasi 100% grafik dan legenda) untuk chart Konversi Pengunjung Baru.',
+      'Refactor total fitur Perbandingan Penerimaan Kebaktian dan Luar Kebaktian dengan filter 1 bulan, 3 bulan, 1 tahun, serta perbandingan tahunan dan mode sisi akumulasi.',
       'Otomatisasi penuh pembaruan catatan rilis pasca-build oleh AI.',
       'Konsolidasi modul Missing Middle ke Kesenjangan Generasi dengan sinkronisasi urutan legenda.',
       'Penghapusan analisa Jemaat Musiman dan Giving Fatigue sesuai kebutuhan operasional.'

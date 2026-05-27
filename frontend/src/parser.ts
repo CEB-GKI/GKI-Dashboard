@@ -271,6 +271,8 @@ function parseUang(sheetData: any[][]) {
         "Rata-rata Penerimaan": getVal(7),
         "Penerimaan (Tahun Lalu)": getVal(2),
         "Rata-rata Penerimaan (Tahun Lalu)": getVal(3),
+        "Akumulasi (Tahun Lalu)": getVal(4),
+        "Rata-rata Akumulasi (Tahun Lalu)": getVal(5),
         "Akumulasi": getVal(8),
         "Rata-rata Akumulasi": getVal(9)
       });

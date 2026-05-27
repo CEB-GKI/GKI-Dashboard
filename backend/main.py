@@ -303,6 +303,8 @@ def parse_uang(df):
                 "Rata-rata Penerimaan": get_val(7),
                 "Penerimaan (Tahun Lalu)": get_val(2),
                 "Rata-rata Penerimaan (Tahun Lalu)": get_val(3),
+                "Akumulasi (Tahun Lalu)": get_val(4),
+                "Rata-rata Akumulasi (Tahun Lalu)": get_val(5),
                 "Akumulasi": get_val(8),
                 "Rata-rata Akumulasi": get_val(9)
             })

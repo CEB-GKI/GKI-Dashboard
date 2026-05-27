@@ -671,20 +671,41 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                   <h3 style={{ marginBottom: '16px', marginTop: 0 }}>Tabel Ringkasan Data (Teraplikasi Filter: {activeFilterText})</h3>
                   <div className="table-responsive-wrapper">
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
-                      <thead>
-                        <tr>
-                        <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>Tanggal</th>
-                        {chartActiveKeys.map(key => <th key={key} style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>{formatChartKey(key, sheetName, false)}</th>)}
-                      </tr>
-                      </thead>
-                      <tbody>
-                        {chartData.map((row, i) => (
-                          <tr key={i} style={{ backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.03)' : 'transparent' }}>
-                            <td style={{ padding: '8px', fontWeight: 'bold' }}>{formatXAxis(row.name)}</td>
-                            {chartActiveKeys.map(key => <td key={key} style={{ padding: '8px' }}>{row[key] ?? '-'}</td>)}
-                          </tr>
-                        ))}
-                      </tbody>
+                      {chartData.length === 1 ? (
+                        <>
+                          <thead>
+                            <tr>
+                              <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>Metrik</th>
+                              <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>{formatXAxis(chartData[0].name)}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {chartActiveKeys.map((key, i) => (
+                              <tr key={key} style={{ backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.03)' : 'transparent' }}>
+                                <td style={{ padding: '8px', fontWeight: 'bold' }}>{formatChartKey(key, sheetName, false)}</td>
+                                <td style={{ padding: '8px' }}>{chartData[0][key] ?? '-'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </>
+                      ) : (
+                        <>
+                          <thead>
+                            <tr>
+                              <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>Tanggal</th>
+                              {chartActiveKeys.map(key => <th key={key} style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>{formatChartKey(key, sheetName, false)}</th>)}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {chartData.map((row, i) => (
+                              <tr key={i} style={{ backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.03)' : 'transparent' }}>
+                                <td style={{ padding: '8px', fontWeight: 'bold' }}>{formatXAxis(row.name)}</td>
+                                {chartActiveKeys.map(key => <td key={key} style={{ padding: '8px' }}>{row[key] ?? '-'}</td>)}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </>
+                      )}
                     </table>
                   </div>
                 </div>
@@ -834,20 +855,41 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                   <h3 style={{ marginBottom: '16px', marginTop: 0 }}>Tabel Resume Tahun Pelayanan</h3>
                   <div className="table-responsive-wrapper">
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
-                      <thead>
-                        <tr>
-                        <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)', textAlign: 'left' }}>Kategori</th>
-                        {activeYearlyKeys.map(key => <th key={key} style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>{formatChartKey(key, sheetName, true)}</th>)}
-                      </tr>
-                      </thead>
-                      <tbody>
-                        {activeYearlyChartData.map((row, i) => (
-                          <tr key={i} style={{ backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.03)' : 'transparent' }}>
-                            <td style={{ padding: '8px', fontWeight: 'bold' }}>{row.name}</td>
-                            {activeYearlyKeys.map(key => <td key={key} style={{ padding: '8px' }}>{row[key] !== undefined && row[key] !== null ? Number(row[key]).toFixed(1).replace(/\.0$/, '') : '-'}</td>)}
-                          </tr>
-                        ))}
-                      </tbody>
+                      {activeYearlyChartData.length === 1 ? (
+                        <>
+                          <thead>
+                            <tr>
+                              <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)', textAlign: 'left' }}>Metrik</th>
+                              <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>{activeYearlyChartData[0].name}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {activeYearlyKeys.map((key, i) => (
+                              <tr key={key} style={{ backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.03)' : 'transparent' }}>
+                                <td style={{ padding: '8px', fontWeight: 'bold' }}>{formatChartKey(key, sheetName, true)}</td>
+                                <td style={{ padding: '8px' }}>{activeYearlyChartData[0][key] !== undefined && activeYearlyChartData[0][key] !== null ? Number(activeYearlyChartData[0][key]).toFixed(1).replace(/\.0$/, '') : '-'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </>
+                      ) : (
+                        <>
+                          <thead>
+                            <tr>
+                              <th style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)', textAlign: 'left' }}>Kategori</th>
+                              {activeYearlyKeys.map(key => <th key={key} style={{ padding: '8px', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-secondary)' }}>{formatChartKey(key, sheetName, true)}</th>)}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {activeYearlyChartData.map((row, i) => (
+                              <tr key={i} style={{ backgroundColor: i % 2 === 0 ? 'rgba(255, 255, 255, 0.03)' : 'transparent' }}>
+                                <td style={{ padding: '8px', fontWeight: 'bold' }}>{row.name}</td>
+                                {activeYearlyKeys.map(key => <td key={key} style={{ padding: '8px' }}>{row[key] !== undefined && row[key] !== null ? Number(row[key]).toFixed(1).replace(/\.0$/, '') : '-'}</td>)}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </>
+                      )}
                     </table>
                   </div>
 

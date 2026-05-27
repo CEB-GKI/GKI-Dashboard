@@ -6,7 +6,7 @@ import { TenagaDashboard } from './components/TenagaDashboard';
 import { MutasiDashboard } from './components/MutasiDashboard';
 import { AnalisaDashboard } from './components/AnalisaDashboard';
 import updateNotes from './updateNotes.json';
-import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle, XCircle } from 'lucide-react';
+import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle, XCircle, Menu, X } from 'lucide-react';
 import { getHistory, saveHistory, deleteHistory, type HistoryItem } from './db';
 
 const isSingleFile = import.meta.env.VITE_APP_MODE === 'singlefile';
@@ -39,6 +39,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [activeSheet, setActiveSheet] = useState<string>(FOCUS_SHEETS[0]);
   const [recentFiles, setRecentFiles] = useState<HistoryItem[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     loadHistory();
@@ -226,16 +227,25 @@ function App() {
     <div className="app-container">
       {/* SIDEBAR */}
       <aside className="sidebar">
-        <div className="sidebar-header">
-          <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
-            LKKJ VISUALIZATION
-          </h1>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 500 }}>
-            {data.church_name ? `GKI ${data.church_name}` : ''}
+        <div className="sidebar-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
+              LKKJ VISUALIZATION
+            </h1>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 500 }}>
+              {data.church_name ? `GKI ${data.church_name}` : ''}
+            </div>
           </div>
+          <button 
+            className="mobile-menu-btn" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
 
-        <div className="sidebar-content">
+        <div className={`sidebar-content ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="url-input-container">
             <h3 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Sumber Data
@@ -306,7 +316,7 @@ function App() {
                   {FOCUS_SHEETS.filter(s => !ADMIN_SHEETS.includes(s)).map(sheet => (
                     <button 
                       key={sheet}
-                      onClick={() => setActiveSheet(sheet)}
+                      onClick={() => { setActiveSheet(sheet); setIsMobileMenuOpen(false); }}
                       className={`nav-link ${activeSheet === sheet ? 'active' : ''}`}
                     >
                       {sheet}
@@ -323,7 +333,7 @@ function App() {
                   {FOCUS_SHEETS.filter(s => ADMIN_SHEETS.includes(s)).map(sheet => (
                     <button 
                       key={sheet}
-                      onClick={() => setActiveSheet(sheet)}
+                      onClick={() => { setActiveSheet(sheet); setIsMobileMenuOpen(false); }}
                       className={`nav-link ${activeSheet === sheet ? 'active' : ''}`}
                     >
                       {sheet}
@@ -334,7 +344,7 @@ function App() {
 
               <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <button 
-                  onClick={() => setActiveSheet('Analisa')}
+                  onClick={() => { setActiveSheet('Analisa'); setIsMobileMenuOpen(false); }}
                   className={`nav-link ${activeSheet === 'Analisa' ? 'active' : ''}`}
                   style={{ 
                     background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)', 
@@ -346,7 +356,7 @@ function App() {
                   ✨ ANALISA
                 </button>
                 <button 
-                  onClick={() => setActiveSheet('About')}
+                  onClick={() => { setActiveSheet('About'); setIsMobileMenuOpen(false); }}
                   className={`nav-link ${activeSheet === 'About' ? 'active' : ''}`}
                 >
                   ℹ️ About App

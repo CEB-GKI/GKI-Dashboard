@@ -872,13 +872,14 @@ const analisa3 = useMemo(() => {
         
         const jam = row.Jam || 'Lain-lain';
         if (!grouped[key].details[jam]) {
-          grouped[key].details[jam] = { curr: 0, prev: 0 };
+          grouped[key].details[jam] = { curr: 0, prev: 0, isKolekte: false };
         }
 
         // Kolekte = No 1 to 8, Syukur = No 9 to 13
         if (row.No >= 1 && row.No <= 8) {
           grouped[key].Kolekte += (row['Penerimaan'] || 0);
           grouped[key].KolektePrev += (row['Penerimaan (Tahun Lalu)'] || 0);
+          grouped[key].details[jam].isKolekte = true;
         } else if (row.No >= 9 && row.No <= 13) {
           grouped[key].Syukur += (row['Penerimaan'] || 0);
           grouped[key].SyukurPrev += (row['Penerimaan (Tahun Lalu)'] || 0);
@@ -1103,9 +1104,52 @@ const analisa3 = useMemo(() => {
       }
     }
     
-    const crossoverPeriods = chartData.filter((d: any) => d.Kolekte > d.Syukur).map((d: any) => formatPeriode(d.name));
-    if (crossoverPeriods.length > 0) {
-      dynamicText.push(`Terdapat fenomena langka pada ${crossoverPeriods.join(', ')} di mana Persembahan Kebaktian berhasil melampaui Persembahan Luar Kebaktian, padahal biasanya Persembahan Luar Kebaktian jauh lebih tinggi.`);
+    const crossoverTexts: string[] = [];
+    chartData.forEach((d: any, i: number) => {
+      if (d.Kolekte > d.Syukur) {
+        let maxJam = '';
+        let maxVal = 0;
+        
+        if (analisa13Compare) {
+            Object.keys(d.details).forEach(jam => {
+                if (d.details[jam].isKolekte) {
+                    const increase = d.details[jam].curr - d.details[jam].prev;
+                    if (increase > maxVal) { maxVal = increase; maxJam = jam; }
+                }
+            });
+        } else {
+            const prevD = i > 0 ? chartData[i-1] : null;
+            Object.keys(d.details).forEach(jam => {
+                if (d.details[jam].isKolekte) {
+                    const prevVal = prevD && prevD.details[jam] ? prevD.details[jam].curr : 0;
+                    const increase = d.details[jam].curr - prevVal;
+                    if (increase > maxVal) { maxVal = increase; maxJam = jam; }
+                }
+            });
+        }
+        
+        if (maxJam && maxVal > 0) {
+            crossoverTexts.push(`${formatPeriode(d.name)} (didorong oleh lonjakan pada "${maxJam}" sebesar ${formatCurrency(maxVal)})`);
+        } else {
+            let highestJam = '';
+            let highestVal = 0;
+            Object.keys(d.details).forEach(jam => {
+                if (d.details[jam].isKolekte && d.details[jam].curr > highestVal) {
+                    highestVal = d.details[jam].curr;
+                    highestJam = jam;
+                }
+            });
+            if (highestJam) {
+                crossoverTexts.push(`${formatPeriode(d.name)} (penyumbang tertinggi: "${highestJam}" sebesar ${formatCurrency(highestVal)})`);
+            } else {
+                crossoverTexts.push(formatPeriode(d.name));
+            }
+        }
+      }
+    });
+
+    if (crossoverTexts.length > 0) {
+      dynamicText.push(`Terdapat fenomena langka pada ${crossoverTexts.join(', ')} di mana Persembahan Kebaktian berhasil melampaui Persembahan Luar Kebaktian.`);
     }
       
     const alertText = isWarning ? `Peringatan: Tren persembahan mengalami penurunan yang signifikan.` : null;

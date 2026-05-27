@@ -77,7 +77,11 @@ function AnalisaCard({ title, icon, description, chart, table, alertText, status
       {dynamicText && (
         <div style={{ padding: '0 24px', marginTop: '16px' }}>
           <div style={{ padding: '12px 16px', background: 'rgba(59, 130, 246, 0.1)', borderLeft: `4px solid ${COLORS.blue}`, borderRadius: '0 8px 8px 0', color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: '1.5' }}>
-            {dynamicText}
+            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              {(Array.isArray(dynamicText) ? dynamicText : typeof dynamicText === 'string' ? dynamicText.split(/(?<=[a-zA-Z])\.\s+/).filter(Boolean) : [dynamicText]).map((text: any, i: number) => (
+                <li key={i}>{text}{typeof text === 'string' && !text.endsWith('.') && !text.endsWith('?') ? '.' : ''}</li>
+              ))}
+            </ul>
           </div>
         </div>
       )}
@@ -85,8 +89,12 @@ function AnalisaCard({ title, icon, description, chart, table, alertText, status
       {alertText && (
         <div style={{ padding: '16px 24px 0 24px' }}>
           <div className={`alert-box alert-${status}`}>
-            {status === 'warning' ? <AlertTriangle size={20} /> : status === 'good' ? <CheckCircle size={20} /> : <Info size={20} />}
-            <span>{alertText}</span>
+            {status === 'warning' ? <AlertTriangle size={20} style={{flexShrink: 0}} /> : status === 'good' ? <CheckCircle size={20} style={{flexShrink: 0}} /> : <Info size={20} style={{flexShrink: 0}} />}
+            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              {(Array.isArray(alertText) ? alertText : typeof alertText === 'string' ? alertText.split(/(?<=[a-zA-Z])\.\s+/).filter(Boolean) : [alertText]).map((text: any, i: number) => (
+                <li key={i}>{text}{typeof text === 'string' && !text.endsWith('.') && !text.endsWith('?') ? '.' : ''}</li>
+              ))}
+            </ul>
           </div>
         </div>
       )}
@@ -1080,19 +1088,24 @@ const analisa3 = useMemo(() => {
 
     const description = "Membandingkan jumlah penerimaan yang dikumpulkan pada saat ibadah dengan persembahan yang diberikan di luar ibadah.";
     
-    let dynamicText = `Grafik menampilkan perbandingan tren keuangan untuk ${analisa13Time === '1y' ? 'tahunan' : analisa13Time === '3m' ? 'per kuartal' : analisa13Time === '1m' ? 'bulanan' : 'semua data'}.`;
+    let dynamicText: string[] = [];
     
     if (highestGapDate) {
       const dir = highestGapValue > 0 ? 'kenaikan' : 'penurunan';
       if (analisa13Compare) {
-        dynamicText += ` Perbedaan paling signifikan dibandingkan tahun lalu terjadi pada ${highestGapDate} di pos ${highestGapType} dengan ${dir} sebesar ${formatCurrency(Math.abs(highestGapValue))}.`;
+        dynamicText.push(`Perbedaan paling signifikan dibandingkan tahun lalu terjadi pada ${highestGapDate} di pos ${highestGapType} dengan ${dir} sebesar ${formatCurrency(Math.abs(highestGapValue))}.`);
       } else {
-        dynamicText += ` Perubahan paling ekstrem terjadi pada periode ${highestGapDate}, di mana pos ${highestGapType} mengalami ${dir} drastis sebesar ${formatCurrency(Math.abs(highestGapValue))}.`;
+        dynamicText.push(`Perubahan paling ekstrem terjadi pada periode ${highestGapDate}, di mana pos ${highestGapType} mengalami ${dir} drastis sebesar ${formatCurrency(Math.abs(highestGapValue))}.`);
       }
       
       if (biggestContributorJam) {
-         dynamicText += ` Data menunjukkan bahwa jenis penerimaan "${biggestContributorJam}" adalah kontributor paling utama di balik lonjakan/penurunan ini (selisih sebesar ${formatCurrency(Math.abs(biggestContributorValue))}).`;
+         dynamicText.push(`Data menunjukkan bahwa jenis penerimaan "${biggestContributorJam}" adalah penyumbang utama perubahan ini (selisih sebesar ${formatCurrency(Math.abs(biggestContributorValue))}).`);
       }
+    }
+    
+    const crossoverPeriods = chartData.filter((d: any) => d.Kolekte > d.Syukur).map((d: any) => formatPeriode(d.name));
+    if (crossoverPeriods.length > 0) {
+      dynamicText.push(`Terdapat fenomena langka pada ${crossoverPeriods.join(', ')} di mana Persembahan Kebaktian berhasil melampaui Persembahan Luar Kebaktian, padahal biasanya Persembahan Luar Kebaktian jauh lebih tinggi.`);
     }
       
     const alertText = isWarning ? `Peringatan: Tren persembahan mengalami penurunan yang signifikan.` : null;

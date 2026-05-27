@@ -235,7 +235,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
       const val1 = parseFloat(row[selectedMetric]) || 0;
       const val2 = compareMetric ? (parseFloat(row[compareMetric]) || 0) : null;
       if (!grouped[groupKey]) {
-        grouped[groupKey] = { name: groupKey, sortDate: date };
+        grouped[groupKey] = { name: groupKey, sortDate: (timeFilter === '1_year' && sheetName !== 'Perayaan') ? yyyy_mm : date };
         counts[groupKey] = {};
       }
       if (sheetName === 'Perayaan') {
@@ -650,7 +650,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                       <XAxis dataKey="sortDate" tickFormatter={d => formatXAxis(d)} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dy={10} />
                       <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dx={-10} />
-                      <Tooltip contentStyle={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)', color: '#fff' }} itemStyle={{ color: '#fff' }} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} formatter={(value: any, name: any) => [value, formatChartKey(name as string, sheetName, false)]} />
+                      <Tooltip contentStyle={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)', color: '#fff' }} itemStyle={{ color: '#fff' }} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} formatter={(value: any, name: any) => [value, formatChartKey(name as string, sheetName, false)]} labelFormatter={(label) => formatXAxis(label)} />
                       <Legend wrapperStyle={{ paddingTop: '20px' }} formatter={(value: any) => formatChartKey(value as string, sheetName, false)} />
                       {chartActiveKeys.map((key, idx) => (
                         <Bar key={`bar-${key}`} dataKey={key} fill={getColorForKey(key, idx)} fillOpacity={key.includes(compareMetric) && compareMetric !== '' ? 0.6 : 1} radius={[4, 4, 0, 0]} />

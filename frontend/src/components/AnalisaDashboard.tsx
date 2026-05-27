@@ -1021,7 +1021,7 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
           </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))', gap: '24px' }}>
         {activeCards.map((card: any, idx: number) => (
           <AnalisaCard key={idx} {...card} forceShow={showHidden && card.isHidden} />
         ))}

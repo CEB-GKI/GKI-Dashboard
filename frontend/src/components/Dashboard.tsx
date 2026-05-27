@@ -457,14 +457,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '100vw', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <h2>Dashboard Laporan: <span style={{ color: 'var(--accent)' }}>{sheetName}</span></h2>
+      <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '16px 24px', borderLeft: '4px solid var(--accent)' }}>
+        <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
+          Dashboard Laporan: <span style={{ color: 'var(--accent)' }}>{sheetName}</span>
+        </h2>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn" onClick={exportPDF}>
-            <Download size={18} /> Export PDF
+          <button className="btn" onClick={exportPDF} style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export PDF
           </button>
-          <button className="btn" onClick={exportPPTX} style={{ background: '#d97706' }}>
-            <Download size={18} /> Export PPTX
+          <button className="btn" onClick={exportPPTX} style={{ background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)', padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export PPTX
           </button>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { TenagaDashboard } from './components/TenagaDashboard';
 import { MutasiDashboard } from './components/MutasiDashboard';
 import { AnalisaDashboard } from './components/AnalisaDashboard';
 import { updateNotes } from './updateNotes';
-import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock } from 'lucide-react';
+import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle } from 'lucide-react';
 import { getHistory, saveHistory, deleteHistory, type HistoryItem } from './db';
 
 const isSingleFile = import.meta.env.VITE_APP_MODE === 'singlefile';
@@ -224,45 +224,61 @@ function App() {
 
   return (
     <div className="app-container">
-      <nav className="navbar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ background: 'var(--accent)', padding: '8px', borderRadius: '8px', display: 'flex' }}>
-            <Activity color="white" size={24} />
-          </div>
-          <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>
-            GKI {data.church_name ? `${data.church_name} ` : ''}Dashboard
+      {/* SIDEBAR */}
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.02em' }}>
+            LKKJ VISUALIZATION
           </h1>
-        </div>
-        
-        {!isSingleFile && Object.keys(data).length > 0 && (
-          <div className={`status-badge ${isCached ? 'cached' : 'live'}`}>
-            {isCached ? <WifiOff size={16} /> : <RefreshCw size={16} />}
-            {isCached ? 'Offline (Cached Data)' : 'Live Data'}
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 500 }}>
+            GKI {data.church_name ? `${data.church_name}` : 'WAHA'}
           </div>
-        )}
-      </nav>
+        </div>
 
-      <main className="main-content">
-        <div className="glass-panel animate-fade-in" style={{ marginBottom: '32px' }}>
-          <h2 style={{ marginTop: 0 }}>Sumber Data Spreadsheet</h2>
+        <div className="sidebar-content">
           <div className="url-input-container">
-            <div style={{ position: 'relative', flex: 1 }}>
-              <LinkIcon size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+            <h3 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Sumber Data
+            </h3>
+            <div style={{ position: 'relative' }}>
+              <LinkIcon size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
               <input 
                 type="text" 
                 className="input-field" 
-                style={{ paddingLeft: '44px' }}
+                style={{ paddingLeft: '36px', fontSize: '0.85rem' }}
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Masukkan URL Google Spreadsheet..."
+                placeholder="URL Google Sheets..."
               />
             </div>
-            <button className="btn" onClick={handleFetch} disabled={loading || !url.trim()}>
-              {loading ? <RefreshCw className="animate-spin" size={18} /> : 'Tarik Data'}
-            </button>
             
-            <div style={{ padding: '0 8px', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.875rem' }}>ATAU</div>
-            
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button className="btn" onClick={handleFetch} disabled={loading || !url.trim()} style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}>
+                {loading ? <RefreshCw className="animate-spin" size={16} /> : 'Tarik Data'}
+              </button>
+              
+              {hasDefaultUrl && (
+                <button 
+                  className="btn" 
+                  onClick={() => {
+                    localStorage.removeItem('defaultGsheetUrl');
+                    setHasDefaultUrl(false);
+                    setUrl('');
+                  }} 
+                  style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', padding: '8px' }}
+                  title="Reset Default Link"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0' }}>
+              <div style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>ATAU</div>
+              <div style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></div>
+            </div>
+
             <input 
               type="file" 
               accept=".xlsx" 
@@ -274,76 +290,24 @@ function App() {
               className="btn" 
               onClick={handleLocalUploadClick} 
               disabled={loading}
-              style={{ background: 'transparent', border: '1px solid var(--glass-border)' }}
+              style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', padding: '8px', fontSize: '0.85rem' }}
             >
-              <Upload size={18} />
-              Unggah Lokal
+              <Upload size={16} /> Unggah Lokal
             </button>
-
-            {hasDefaultUrl && (
-              <button 
-                className="btn" 
-                onClick={() => {
-                  localStorage.removeItem('defaultGsheetUrl');
-                  setHasDefaultUrl(false);
-                  setUrl('');
-                }} 
-                style={{ background: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.4)', color: '#fca5a5' }}
-                title="Reset Default Link"
-              >
-                <Trash2 size={18} />
-              </button>
-            )}
           </div>
 
-          {recentFiles.length > 0 && (
-            <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--glass-border)' }}>
-              <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <FileClock size={16} /> Riwayat File Terbaru:
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {recentFiles.map(item => (
-                  <div 
-                    key={item.id} 
-                    onClick={() => handleHistoryClick(item)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s', border: '1px solid transparent' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-                  >
-                    {item.type === 'url' ? <LinkIcon size={16} color="#3b82f6" /> : <Upload size={16} color="#10b981" />}
-                    <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-primary)' }}>{item.path}</span>
-                    </div>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); deleteHistory(item.id).then(loadHistory); }}
-                      style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
-                      onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
-                      title="Hapus dari riwayat"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {error && <p style={{ color: '#fbbf24', marginTop: '16px', marginBottom: 0 }}>{error}</p>}
-        </div>
-
-        {Object.keys(data).length > 0 && (
-          <div className="dashboard-layout">
-            <div className="sidebar-nav glass-panel animate-fade-in">
-              <div style={{ marginBottom: '16px' }}>
-                <h3 style={{ marginTop: 0, paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>Kebaktian</h3>
-                <div className="nav-list" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {Object.keys(data).length > 0 && (
+            <>
+              <div>
+                <h3 style={{ margin: '16px 0 8px 0', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
+                  Kebaktian
+                </h3>
+                <div className="nav-list">
                   {FOCUS_SHEETS.filter(s => !ADMIN_SHEETS.includes(s)).map(sheet => (
                     <button 
                       key={sheet}
                       onClick={() => setActiveSheet(sheet)}
                       className={`nav-link ${activeSheet === sheet ? 'active' : ''}`}
-                      style={{ background: activeSheet === sheet ? 'rgba(59, 130, 246, 0.2)' : 'transparent', border: 'none', textAlign: 'left', fontSize: '0.9rem', padding: '8px 12px' }}
                     >
                       {sheet}
                     </button>
@@ -352,14 +316,15 @@ function App() {
               </div>
 
               <div>
-                <h3 style={{ marginTop: 0, paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>Administrasi</h3>
-                <div className="nav-list" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <h3 style={{ margin: '16px 0 8px 0', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
+                  Administrasi
+                </h3>
+                <div className="nav-list">
                   {FOCUS_SHEETS.filter(s => ADMIN_SHEETS.includes(s)).map(sheet => (
                     <button 
                       key={sheet}
                       onClick={() => setActiveSheet(sheet)}
                       className={`nav-link ${activeSheet === sheet ? 'active' : ''}`}
-                      style={{ background: activeSheet === sheet ? 'rgba(59, 130, 246, 0.2)' : 'transparent', border: 'none', textAlign: 'left', fontSize: '0.9rem', padding: '8px 12px' }}
                     >
                       {sheet}
                     </button>
@@ -372,16 +337,10 @@ function App() {
                   onClick={() => setActiveSheet('Analisa')}
                   className={`nav-link ${activeSheet === 'Analisa' ? 'active' : ''}`}
                   style={{ 
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)', 
-                    color: 'white',
-                    border: 'none', 
-                    textAlign: 'left', 
-                    fontSize: '0.95rem', 
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)', 
+                    color: 'var(--text-primary)',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
                     fontWeight: 600,
-                    padding: '10px 12px', 
-                    width: '100%', 
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)'
                   }}
                 >
                   ✨ ANALISA
@@ -389,14 +348,95 @@ function App() {
                 <button 
                   onClick={() => setActiveSheet('About')}
                   className={`nav-link ${activeSheet === 'About' ? 'active' : ''}`}
-                  style={{ background: activeSheet === 'About' ? 'rgba(59, 130, 246, 0.2)' : 'transparent', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'left', fontSize: '0.9rem', padding: '8px 12px', width: '100%', borderRadius: '8px' }}
                 >
                   ℹ️ About App
                 </button>
               </div>
-            </div>
+            </>
+          )}
+        </div>
 
-            <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="sidebar-footer">
+          <div className="sensus-badge">
+            <CheckCircle size={16} /> Sensus LKKJ OK
+          </div>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <div className="main-content-wrapper">
+        <header className="top-navbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ background: 'linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%)', padding: '8px', borderRadius: '8px', display: 'flex', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)' }}>
+              <Activity color="white" size={20} />
+            </div>
+            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <span style={{ color: 'var(--accent)', marginRight: '6px' }}>v3.1</span>
+              LKKJ VISUALIZATION • GKI {data.church_name ? `${data.church_name}` : 'WAHA'}
+            </h2>
+          </div>
+          
+          {!isSingleFile && Object.keys(data).length > 0 && (
+            <div className={`status-badge ${isCached ? 'cached' : 'live'}`}>
+              {isCached ? <WifiOff size={14} /> : <RefreshCw size={14} />}
+              {isCached ? 'OFFLINE (CACHED)' : 'LIVE SYNC ACTIVE'}
+            </div>
+          )}
+        </header>
+
+        <main className="main-content">
+          {error && (
+            <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#fbbf24', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
+              {error}
+            </div>
+          )}
+
+          {Object.keys(data).length === 0 && !loading && (
+            <div className="glass-panel animate-fade-in" style={{ textAlign: 'center', padding: '64px 24px', maxWidth: '600px', margin: '48px auto' }}>
+              <Activity size={48} color="var(--accent)" style={{ marginBottom: '24px', opacity: 0.8 }} />
+              <h2 style={{ margin: '0 0 16px 0', color: 'var(--text-primary)', fontSize: '1.5rem' }}>Selamat Datang</h2>
+              <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', margin: 0 }}>
+                Silakan masukkan URL Google Spreadsheet atau unggah file Excel LKKJ Anda melalui menu <strong>Sumber Data</strong> di sidebar sebelah kiri untuk mulai memvisualisasikan data.
+              </p>
+              
+              {recentFiles.length > 0 && (
+                <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--glass-border)', textAlign: 'left' }}>
+                  <h4 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FileClock size={16} /> Riwayat Akses Terbaru
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {recentFiles.map(item => (
+                      <div 
+                        key={item.id} 
+                        onClick={() => handleHistoryClick(item)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s', border: '1px solid transparent' }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                      >
+                        {item.type === 'url' ? <LinkIcon size={16} color="#3b82f6" /> : <Upload size={16} color="#10b981" />}
+                        <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-primary)' }}>{item.path}</span>
+                        </div>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); deleteHistory(item.id).then(loadHistory); }}
+                          style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
+                          onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+                          title="Hapus dari riwayat"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {Object.keys(data).length > 0 && (
+            <div className="animate-fade-in" style={{ height: '100%' }}>
+
               <div style={{ display: activeSheet === 'Analisa' ? 'block' : 'none' }}>
                 <AnalisaDashboard data={data} yearlyData={yearlyData} />
               </div>
@@ -466,17 +506,9 @@ function App() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {Object.keys(data).length === 0 && !loading && (
-          <div className="glass-panel" style={{ textAlign: 'center', padding: '64px 24px' }}>
-            <Activity size={48} color="var(--text-secondary)" style={{ marginBottom: '16px', opacity: 0.5 }} />
-            <h2 style={{ margin: 0, color: 'var(--text-secondary)' }}>Belum ada data</h2>
-            <p style={{ color: 'var(--text-secondary)', opacity: 0.8 }}>Silahkan masukkan URL Google Spreadsheet dan klik "Tarik Data"</p>
-          </div>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
 
       {showToast && (
         <div className="toast-container animate-fade-in" style={{

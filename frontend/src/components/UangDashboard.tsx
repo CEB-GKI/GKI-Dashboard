@@ -313,14 +313,14 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '100vw', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-        <h2>Dashboard Laporan: <span style={{ color: 'var(--accent)' }}>UANG</span></h2>
+      <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '16px 24px', borderLeft: '4px solid var(--accent)' }}>
+        <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Dashboard Laporan: <span style={{ color: 'var(--accent)' }}>UANG</span></h2>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={exportPDF} className="btn">
-            <Download size={18} /> Export PDF
+          <button onClick={exportPDF} className="btn" style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export PDF
           </button>
-          <button onClick={exportPPTX} className="btn" style={{ background: '#d97706' }}>
-            <Download size={18} /> Export PPTX
+          <button onClick={exportPPTX} className="btn" style={{ background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)', padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export PPTX
           </button>
         </div>
       </div>

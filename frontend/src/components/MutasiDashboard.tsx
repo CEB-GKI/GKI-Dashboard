@@ -112,30 +112,23 @@ export const MutasiDashboard: React.FC<MutasiDataProps> = ({ data, churchName })
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }}>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', padding: '16px 24px', borderLeft: '4px solid var(--accent)' }}>
         <div>
-          <h2 style={{ margin: '0 0 8px 0', fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+          <h2 style={{ margin: '0 0 4px 0', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)' }}>
             Dashboard Administrasi MUTASI - GKI {churchName}
           </h2>
-          <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
+          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Menampilkan data mutasi anggota jemaat, termasuk pertambahan dan pengurangan.
           </p>
         </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button
-              className="btn"
-              onClick={exportPDF}
-            >
-              <Download size={18} /> Export PDF
-            </button>
-            <button
-              className="btn"
-              style={{ background: '#d97706' }}
-              onClick={exportPPTX}
-            >
-              <Download size={18} /> Export PPTX
-            </button>
-          </div>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button className="btn" onClick={exportPDF} style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export PDF
+          </button>
+          <button className="btn" onClick={exportPPTX} style={{ background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)', padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export PPTX
+          </button>
+        </div>
       </div>
 
       <div ref={dashboardRef} style={{ display: 'flex', flexDirection: 'column', gap: '24px', background: 'var(--bg-primary)', padding: '24px', borderRadius: '12px' }}>

@@ -146,14 +146,14 @@ export const TenagaDashboard: React.FC<TenagaDataProps> = ({ data, churchName })
 
   return (
     <div ref={dashboardRef} style={{ display: 'flex', flexDirection: 'column', gap: '24px', background: 'var(--bg-color)', padding: '12px' }}>
-      <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-          <h2 style={{ margin: 0 }}>Statistik Tenaga ({churchName || 'GKI'})</h2>
+      <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px', padding: '16px 24px', borderLeft: '4px solid var(--accent)' }}>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Statistik Tenaga ({churchName || 'GKI'})</h2>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="btn" onClick={exportPDF}>
-              <Download size={18} /> Export PDF
+            <button className="btn" onClick={exportPDF} style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Download size={16} /> Export PDF
             </button>
-            <button className="btn" onClick={exportPPTX} style={{ background: '#d97706' }}>
-              <Download size={18} /> Export PPTX
+            <button className="btn" onClick={exportPPTX} style={{ background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)', padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Download size={16} /> Export PPTX
             </button>
           </div>
         </div>

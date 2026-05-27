@@ -6,7 +6,7 @@ import { TenagaDashboard } from './components/TenagaDashboard';
 import { MutasiDashboard } from './components/MutasiDashboard';
 import { AnalisaDashboard } from './components/AnalisaDashboard';
 import { updateNotes } from './updateNotes';
-import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle } from 'lucide-react';
+import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle, XCircle } from 'lucide-react';
 import { getHistory, saveHistory, deleteHistory, type HistoryItem } from './db';
 
 const isSingleFile = import.meta.env.VITE_APP_MODE === 'singlefile';
@@ -231,7 +231,7 @@ function App() {
             LKKJ VISUALIZATION
           </h1>
           <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 500 }}>
-            GKI {data.church_name ? `${data.church_name}` : 'WAHA'}
+            {data.church_name ? `GKI ${data.church_name}` : ''}
           </div>
         </div>
 
@@ -357,9 +357,15 @@ function App() {
         </div>
 
         <div className="sidebar-footer">
-          <div className="sensus-badge">
-            <CheckCircle size={16} /> Sensus LKKJ OK
-          </div>
+          {Object.keys(data).length > 0 && !error ? (
+            <div className="sensus-badge" style={{ color: '#10b981', borderColor: 'rgba(16, 185, 129, 0.3)', background: 'rgba(16, 185, 129, 0.1)' }}>
+              <CheckCircle size={16} /> Baca Data Berhasil!
+            </div>
+          ) : error ? (
+            <div className="sensus-badge" style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.1)' }}>
+              <XCircle size={16} /> Baca Data Gagal!
+            </div>
+          ) : null}
         </div>
       </aside>
 
@@ -372,7 +378,7 @@ function App() {
             </div>
             <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)' }}>
               <span style={{ color: 'var(--accent)', marginRight: '6px' }}>v3.1</span>
-              LKKJ VISUALIZATION • GKI {data.church_name ? `${data.church_name}` : 'WAHA'}
+              LKKJ VISUALIZATION{data.church_name ? ` • GKI ${data.church_name}` : ''}
             </h2>
           </div>
           

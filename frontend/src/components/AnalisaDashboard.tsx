@@ -481,94 +481,6 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
 
 
 
-  const analisa6 = useMemo(() => {
-    const title = 'Rasio Jemaat Musiman';
-    const kebMinggu = yearlyData['Keb. Minggu'] || [];
-    const perayaan = yearlyData['Perayaan'] || [];
-    
-    const chartData = [];
-    const allYears = Array.from(new Set([...kebMinggu.map((x:any)=>x.Tanggal), ...perayaan.map((x:any)=>x.Tanggal)])).filter(Boolean).sort() as number[];
-
-    for (const year of allYears) {
-      const p = perayaan.find((x: any) => x.Tanggal === year);
-      const km = kebMinggu.find((x: any) => x.Tanggal === year);
-      
-      const avgPerayaan = p ? Math.ceil(p['Total Kehadiran'] || 0) : 0;
-      const avgMinggu = km ? Math.ceil(km['Total Kehadiran'] || 0) : 0;
-
-      if (avgPerayaan > 0 || avgMinggu > 0) {
-        chartData.push({
-          name: year,
-          Perayaan: avgPerayaan,
-          Reguler: avgMinggu
-        });
-      }
-    }
-
-    const hasData = chartData.some((d: any) => d.Perayaan > 0) && chartData.some((d: any) => d.Reguler > 0);
-
-    let isWarning = false;
-    let ratio = 0;
-    
-    if (chartData.length > 0) {
-      const last = chartData[chartData.length - 1];
-      if (last.Reguler > 0) {
-        ratio = (last.Perayaan / last.Reguler);
-        if (ratio > 2) {
-          isWarning = true;
-        }
-      }
-    }
-
-    const table = (
-      <table className="data-table">
-        <thead>
-          <tr><th>Tahun</th><th>Rata-rata Kehadiran Perayaan</th><th>Rata-rata Kehadiran Minggu</th><th>Rasio (Perayaan / Minggu)</th></tr>
-        </thead>
-        <tbody>
-          {chartData.map((row: any, i: number) => (
-            <tr key={i}><td>{row.name}</td><td>{row.Perayaan}</td><td>{row.Reguler}</td><td>{row.Reguler > 0 ? (row.Perayaan/row.Reguler).toFixed(2) : '-'}x lipat</td></tr>
-          ))}
-        </tbody>
-      </table>
-    );
-
-    const chart = (
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
-          <YAxis stroke="rgba(255,255,255,0.5)" />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
-          <Bar dataKey="Perayaan" fill={COLORS.orange} radius={[4, 4, 0, 0]} name="Kehadiran Perayaan" />
-          <Bar dataKey="Reguler" fill={COLORS.blue} radius={[4, 4, 0, 0]} name="Kehadiran Ibadah Minggu" />
-        </BarChart>
-      </ResponsiveContainer>
-    );
-
-    const description = "Membandingkan tingkat kehadiran rata-rata di hari Perayaan (seperti Natal/Paskah) dengan rata-rata ibadah Minggu reguler.";
-    const dynamicText = chartData.length > 0 
-      ? `Pada masa raya, gereja menampung jemaat sebesar ${ratio.toFixed(1)}x lipat dari kapasitas rata-rata mingguan.`
-      : `Menghitung data perayaan...`;
-      
-    const alertText = isWarning
-      ? "Jumlah pengunjung ibadah raya sangat membludak (>2x lipat jemaat rutin). Ini adalah potensi besar ('Jemaat Musiman') yang harus dikelola melalui tim follow-up setelah masa raya selesai untuk diintegrasikan ke ibadah mingguan."
-      : null;
-
-    return { sources: ['Kehadiran Perayaan', 'Kehadiran Keb. Minggu'], 
-      isHidden: !hasData, 
-      title, 
-      icon: <Users color={COLORS.orange} />, 
-      description, 
-      dynamicText, 
-      chart, 
-      table, 
-      alertText, 
-      status: isWarning ? 'warning' : 'neutral'
-    };
-  }, [data, yearlyData]);
-
   const analisa7 = useMemo(() => {
     const title = 'Sumber Pertumbuhan Jemaat (Migrasi vs Organik)';
         const alasan = data['Mutasi']?.alasan_mutasi || [];
@@ -1007,7 +919,7 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
     
     for (const km of kebMinggu) {
       let y = String(km.Tanggal);
-      const match = y.match(/\\d{4}\\s*-\\s*(\\d{4})/);
+      const match = y.match(/\d{4}\s*-\s*(\d{4})/);
       if (match) {
         y = match[1];
       }
@@ -1157,7 +1069,7 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
     'Peringatan Krisis Regenerasi Pemimpin'
   ];
 
-  const allModules = [analisa2, analisa3, analisa4, analisa6, analisa7, analisa8, analisa10, analisa12, analisa13, analisa15, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
+  const allModules = [analisa2, analisa3, analisa4, analisa7, analisa8, analisa10, analisa12, analisa13, analisa15, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
   
   const activeCards = allModules
     .filter((c: any) => c && (!c.isHidden || showHidden))

@@ -1006,7 +1006,12 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
     }
     
     for (const km of kebMinggu) {
-      const y = km.Tanggal;
+      let y = String(km.Tanggal);
+      const match = y.match(/\\d{4}\\s*-\\s*(\\d{4})/);
+      if (match) {
+        y = match[1];
+      }
+      
       if (chartDataMap[y]) {
         chartDataMap[y].Kehadiran = km['Total Kehadiran'] || 0;
       } else {

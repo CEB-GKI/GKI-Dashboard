@@ -1,9 +1,21 @@
 import { exportPDF as _exportPDF, exportPPTX as _exportPPTX } from '../utils/exportUtils';
 import { useMemo, useState, useRef } from 'react';
-import { 
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
-} from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { AlertTriangle, Info, CheckCircle, TrendingUp, Users, FileText, Download } from 'lucide-react';
+
+const UniversalLegend = (props: any) => {
+  const { payload } = props;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', paddingTop: '10px', flexWrap: 'wrap' }}>
+      {payload.map((entry: any, index: number) => (
+        <span key={`item-${index}`} style={{ color: entry.color, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 500 }}>
+          <div style={{ width: entry.type === 'line' ? '16px' : '12px', height: entry.type === 'line' ? '3px' : '12px', backgroundColor: entry.color, borderRadius: entry.type === 'line' ? '2px' : '2px' }}></div>
+          {entry.value}
+        </span>
+      ))}
+    </div>
+  );
+};
 
 interface Props {
   data: Record<string, any>;
@@ -261,7 +273,7 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
               <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
               <YAxis stroke="rgba(255,255,255,0.5)" />
               <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} formatter={(val: any) => `${val}%`} />
-              <Legend />
+              <Legend content={UniversalLegend} />
               {categories.filter(c => validCategories.has(c.key) && (analisa2Filter === 'All' || c.key === analisa2Filter)).map(c => (
                 <Line key={c.key} type="monotone" dataKey={c.key} stroke={COLORS_MAP[c.key]} strokeWidth={3} name={`% Hadir ${c.label}`} />
               ))}
@@ -294,30 +306,7 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
   }, [data, yearlyData, analisa2Filter]);
 
 
-const renderLegendAnalisa3 = (props: any) => {
-  const { payload } = props;
-  // We want to force the order to match the bars: Pemuda, DewasaMuda, Lansia
-  const ordered = [];
-  const pemuda = payload.find((p: any) => p.dataKey === 'Pemuda');
-  const dm = payload.find((p: any) => p.dataKey === 'DewasaMuda');
-  const lansia = payload.find((p: any) => p.dataKey === 'Lansia');
-  if (pemuda) ordered.push(pemuda);
-  if (dm) ordered.push(dm);
-  if (lansia) ordered.push(lansia);
-  
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', paddingTop: '10px' }}>
-      {ordered.map((entry: any, index: number) => (
-        <span key={`item-${index}`} style={{ color: entry.color, display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <div style={{ width: '12px', height: '12px', backgroundColor: entry.color }}></div>
-          {entry.value}
-        </span>
-      ))}
-    </div>
-  );
-};
-
-  const analisa3 = useMemo(() => {
+const analisa3 = useMemo(() => {
     const title = 'Kesenjangan Generasi & Missing Middle';
     const diriMassa = data['DIRI']?.massa || [];
 
@@ -386,7 +375,7 @@ const renderLegendAnalisa3 = (props: any) => {
           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
           <YAxis stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend content={renderLegendAnalisa3} />
+          <Legend content={UniversalLegend} />
           <Bar dataKey="Pemuda" fill={COLORS.blue} radius={[4, 4, 0, 0]} name="Pemuda (20-30)" />
           <Bar dataKey="DewasaMuda" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Keluarga Muda (31-39)" />
           <Bar dataKey="Lansia" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Lansia (>60)" />
@@ -474,7 +463,7 @@ const renderLegendAnalisa3 = (props: any) => {
           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
           <YAxis stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
+          <Legend content={UniversalLegend} />
           <Bar dataKey="GSM" fill={COLORS.blue} radius={[4, 4, 0, 0]} name="Jumlah GSM" />
           <Bar dataKey="Anak" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Kehadiran Anak" />
         </BarChart>
@@ -560,7 +549,7 @@ const renderLegendAnalisa3 = (props: any) => {
           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
           <YAxis stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
+          <Legend content={UniversalLegend} />
           <Bar dataKey="ATP" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Atestasi Masuk (Migrasi)" />
           <Bar dataKey="ATD_ATIS" fill={COLORS.green} radius={[4, 4, 0, 0]} name="Baptis + Sidi (Organik)" />
         </BarChart>
@@ -642,7 +631,7 @@ const renderLegendAnalisa3 = (props: any) => {
           <YAxis yAxisId="left" stroke="rgba(255,255,255,0.5)" />
           <YAxis yAxisId="right" orientation="right" stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
+          <Legend content={UniversalLegend} />
           <Line yAxisId="left" type="monotone" dataKey="Jemaat" stroke={COLORS.blue} strokeWidth={3} name="Total Jemaat (DIRI)" />
           <Line yAxisId="right" type="monotone" dataKey="Aktivis" stroke={COLORS.red} strokeWidth={3} name="Total Aktivis" />
         </LineChart>
@@ -728,7 +717,7 @@ const renderLegendAnalisa3 = (props: any) => {
           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
           <YAxis stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
+          <Legend content={UniversalLegend} />
           <Bar dataKey="RasioPelayan" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="% Jemaat yang Melayani" />
         </BarChart>
       </ResponsiveContainer>
@@ -799,11 +788,11 @@ const renderLegendAnalisa3 = (props: any) => {
     const table = (
       <table className="data-table">
         <thead>
-          <tr><th>Tahun</th><th>Rata-rata Simpatisan (Minggu)</th><th>Pendaftaran Anggota (Mutasi Masuk)</th></tr>
+          <tr><th>Tahun</th><th>Pendaftaran Anggota (Mutasi Masuk)</th><th>Rata-rata Simpatisan (Minggu)</th></tr>
         </thead>
         <tbody>
           {chartData.map((row: any, i: number) => (
-            <tr key={i}><td>{row.name}</td><td>{row.SimpatisanMinggu}</td><td>{row.MutasiMasuk}</td></tr>
+            <tr key={i}><td>{row.name}</td><td>{row.MutasiMasuk}</td><td>{row.SimpatisanMinggu}</td></tr>
           ))}
         </tbody>
       </table>
@@ -816,9 +805,9 @@ const renderLegendAnalisa3 = (props: any) => {
           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
           <YAxis stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
+          <Legend content={UniversalLegend} />
+                    <Bar dataKey="MutasiMasuk" fill={COLORS.green} radius={[4, 4, 0, 0]} name="Pendaftaran Anggota" />
           <Bar dataKey="SimpatisanMinggu" fill={COLORS.orange} radius={[4, 4, 0, 0]} name="Kehadiran Simpatisan" />
-          <Bar dataKey="MutasiMasuk" fill={COLORS.green} radius={[4, 4, 0, 0]} name="Pendaftaran Anggota" />
         </BarChart>
       </ResponsiveContainer>
     );
@@ -900,7 +889,7 @@ const renderLegendAnalisa3 = (props: any) => {
           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
           <YAxis stroke="rgba(255,255,255,0.5)" tickFormatter={(val: any) => `${(val / 1000000).toLocaleString('id-ID')} Jt`} width={80} />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} formatter={(val: any) => `Rp ${Number(val).toLocaleString('id-ID')}`} />
-          <Legend />
+          <Legend content={UniversalLegend} />
           <Line type="monotone" dataKey="Kolekte" name="Persembahan Kebaktian" stroke={COLORS.green} strokeWidth={3} />
           <Line type="monotone" dataKey="Syukur" name="Persembahan Luar Kebaktian" stroke={COLORS.purple} strokeWidth={3} />
         </LineChart>
@@ -969,7 +958,7 @@ const renderLegendAnalisa3 = (props: any) => {
           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
           <YAxis stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} formatter={(val: any) => `${val}%`} />
-          <Legend />
+          <Legend content={UniversalLegend} />
           <Line type="monotone" dataKey="Persentase" name="% Simpatisan Baru" stroke={COLORS.orange} strokeWidth={3} />
         </LineChart>
       </ResponsiveContainer>

@@ -9,4 +9,5 @@ env/
 scratch/
 *.xlsx
 *.xls
+push.bat
 

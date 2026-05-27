@@ -857,8 +857,14 @@ const analisa3 = useMemo(() => {
           grouped[key] = { 
             name: key, 
             Kolekte: 0, Syukur: 0, 
-            KolektePrev: 0, SyukurPrev: 0
+            KolektePrev: 0, SyukurPrev: 0,
+            details: {}
           };
+        }
+        
+        const jam = row.Jam || 'Lain-lain';
+        if (!grouped[key].details[jam]) {
+          grouped[key].details[jam] = { curr: 0, prev: 0 };
         }
 
         // Kolekte = No 1 to 8, Syukur = No 9 to 13
@@ -869,6 +875,10 @@ const analisa3 = useMemo(() => {
           grouped[key].Syukur += (row['Penerimaan'] || 0);
           grouped[key].SyukurPrev += (row['Penerimaan (Tahun Lalu)'] || 0);
         }
+        
+        // Track per jam
+        grouped[key].details[jam].curr += (row['Penerimaan'] || 0);
+        grouped[key].details[jam].prev += (row['Penerimaan (Tahun Lalu)'] || 0);
       });
       
       return Object.values(grouped).sort((a: any, b: any) => a.name.localeCompare(b.name));
@@ -898,6 +908,8 @@ const analisa3 = useMemo(() => {
     let highestGapType = '';
     let highestGapValue = 0;
     let highestGapDate = '';
+    let biggestContributorJam = '';
+    let biggestContributorValue = 0;
     
     if (chartData.length > 0) {
       if (analisa13Compare) {
@@ -908,11 +920,37 @@ const analisa3 = useMemo(() => {
             highestGapValue = gap1;
             highestGapType = 'Persembahan Kebaktian';
             highestGapDate = formatPeriode(d.name);
+            
+            // Find biggest contributor
+            let maxJam = '';
+            let maxGap = 0;
+            Object.keys(d.details).forEach(jam => {
+              const g = d.details[jam].curr - d.details[jam].prev;
+              if (Math.abs(g) > Math.abs(maxGap)) {
+                maxGap = g;
+                maxJam = jam;
+              }
+            });
+            biggestContributorJam = maxJam;
+            biggestContributorValue = maxGap;
           }
           if (Math.abs(gap2) > Math.abs(highestGapValue)) {
             highestGapValue = gap2;
             highestGapType = 'Persembahan Luar Kebaktian';
             highestGapDate = formatPeriode(d.name);
+            
+            // Find biggest contributor
+            let maxJam = '';
+            let maxGap = 0;
+            Object.keys(d.details).forEach(jam => {
+              const g = d.details[jam].curr - d.details[jam].prev;
+              if (Math.abs(g) > Math.abs(maxGap)) {
+                maxGap = g;
+                maxJam = jam;
+              }
+            });
+            biggestContributorJam = maxJam;
+            biggestContributorValue = maxGap;
           }
         });
       } else if (chartData.length >= 2) {
@@ -921,15 +959,44 @@ const analisa3 = useMemo(() => {
           const prevD = chartData[i-1];
           const gap1 = d.Kolekte - prevD.Kolekte;
           const gap2 = d.Syukur - prevD.Syukur;
+          
           if (Math.abs(gap1) > Math.abs(highestGapValue)) {
             highestGapValue = gap1;
             highestGapType = 'Persembahan Kebaktian';
             highestGapDate = `${formatPeriode(prevD.name)} ke ${formatPeriode(d.name)}`;
+            
+            // Find biggest contributor
+            let maxJam = '';
+            let maxGap = 0;
+            Object.keys(d.details).forEach(jam => {
+              const prevVal = prevD.details[jam] ? prevD.details[jam].curr : 0;
+              const g = d.details[jam].curr - prevVal;
+              if (Math.abs(g) > Math.abs(maxGap)) {
+                maxGap = g;
+                maxJam = jam;
+              }
+            });
+            biggestContributorJam = maxJam;
+            biggestContributorValue = maxGap;
           }
           if (Math.abs(gap2) > Math.abs(highestGapValue)) {
             highestGapValue = gap2;
             highestGapType = 'Persembahan Luar Kebaktian';
             highestGapDate = `${formatPeriode(prevD.name)} ke ${formatPeriode(d.name)}`;
+            
+            // Find biggest contributor
+            let maxJam = '';
+            let maxGap = 0;
+            Object.keys(d.details).forEach(jam => {
+              const prevVal = prevD.details[jam] ? prevD.details[jam].curr : 0;
+              const g = d.details[jam].curr - prevVal;
+              if (Math.abs(g) > Math.abs(maxGap)) {
+                maxGap = g;
+                maxJam = jam;
+              }
+            });
+            biggestContributorJam = maxJam;
+            biggestContributorValue = maxGap;
           }
         }
       }
@@ -1021,6 +1088,10 @@ const analisa3 = useMemo(() => {
         dynamicText += ` Perbedaan paling signifikan dibandingkan tahun lalu terjadi pada ${highestGapDate} di pos ${highestGapType} dengan ${dir} sebesar ${formatCurrency(Math.abs(highestGapValue))}.`;
       } else {
         dynamicText += ` Perubahan paling ekstrem terjadi pada periode ${highestGapDate}, di mana pos ${highestGapType} mengalami ${dir} drastis sebesar ${formatCurrency(Math.abs(highestGapValue))}.`;
+      }
+      
+      if (biggestContributorJam) {
+         dynamicText += ` Data menunjukkan bahwa jenis penerimaan "${biggestContributorJam}" adalah kontributor paling utama di balik lonjakan/penurunan ini (selisih sebesar ${formatCurrency(Math.abs(biggestContributorValue))}).`;
       }
     }
       

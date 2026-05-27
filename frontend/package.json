@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build:server": "tsc -b && vite build --mode production",
+    "prebuild:html": "node scripts/sync-readme.cjs",
     "build:html": "tsc -b && vite build --mode singlefile",
     "build": "npm run build:server",
     "postbuild": "cd .. && git add . && git commit -m \"build: automatic update after build\" && git push origin main",

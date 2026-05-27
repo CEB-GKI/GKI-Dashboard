@@ -5,7 +5,7 @@ import { DiriDashboard } from './components/DiriDashboard';
 import { TenagaDashboard } from './components/TenagaDashboard';
 import { MutasiDashboard } from './components/MutasiDashboard';
 import { AnalisaDashboard } from './components/AnalisaDashboard';
-import { updateNotes } from './updateNotes';
+import updateNotes from './updateNotes.json';
 import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle, XCircle } from 'lucide-react';
 import { getHistory, saveHistory, deleteHistory, type HistoryItem } from './db';
 

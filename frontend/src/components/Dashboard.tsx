@@ -648,7 +648,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-                      <XAxis dataKey="sortDate" tickFormatter={d => formatXAxis(d)} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dy={10} />
+                      <XAxis dataKey="name" tickFormatter={d => { const fmt = formatXAxis(d); return typeof fmt === 'string' ? fmt.split(' - ')[0] : fmt; }} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dy={10} />
                       <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dx={-10} />
                       <Tooltip contentStyle={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)', color: '#fff' }} itemStyle={{ color: '#fff' }} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} formatter={(value: any, name: any) => [value, formatChartKey(name as string, sheetName, false)]} labelFormatter={(label) => formatXAxis(label)} />
                       <Legend wrapperStyle={{ paddingTop: '20px' }} formatter={(value: any) => formatChartKey(value as string, sheetName, false)} />

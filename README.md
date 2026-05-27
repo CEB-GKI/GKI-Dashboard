@@ -95,15 +95,15 @@ Aplikasi ini dilengkapi dengan skrip inisialisasi otomatis menggunakan berkas `s
 
 ## 📝 Catatan Rilis & Riwayat Build Terbaru
 
-### Versi Terbaru (27 Mei 2026, 22:30 WIB)
+### Versi Terbaru (28 Mei 2026)
+- **Otomatisasi Penuh Pembaruan**: Menerapkan sistem AI terintegrasi untuk menilai dan memperbarui Catatan Rilis (`README.md` dan menu About) secara otomatis pasca-build tanpa intervensi manual.
+- **Konsolidasi Analisa Kesenjangan Generasi**: Menyatukan analisa "Missing Middle" ke dalam modul "Kesenjangan Generasi" utama. Sinkronisasi urutan legenda secara absolut dengan urutan bar chart untuk keterbacaan yang lebih intuitif.
+- **Penyederhanaan Dashboard**: Menghapus analisa Jemaat Musiman dan Giving Fatigue sesuai kebutuhan operasional terbaru.
+
+### Versi Sebelumnya (27 Mei 2026)
 - **Redesign UI & Dark Mode**: Mengubah UI menjadi tema Dark Mode modern dengan efek Glassmorphism yang dinamis dan sidebar yang lebih elegan.
 - **Perbaikan Tooltip & Sumbu X**: Memperbaiki format tampilan tooltip dan sumbu X pada grafik Kebaktian agar menampilkan Bulan dan Tahun (misal: Apr 2025) ketika filter agregasi rata-rata bulanan digunakan.
 - **Otomatisasi Build & Deploy**: Mengintegrasikan skrip build singlefile HTML dan push otomatis ke GitHub (serta dukungan deploy ke Netlify).
-
-### Versi Sebelumnya (26 Mei 2026, 18:30 WIB)
-- **Optimalisasi Arsitektur Rendering**: Penerapan sistem *Background-Cached Tab* yang menghilangkan jeda waktu perpindahan menu (perpindahan berjalan instan).
-- **Pembersihan Kode (Clean Code)**: Refaktorisasi dan ekstraksi logika ekspor PDF & PPTX ke dalam *Global Utility* tunggal di `frontend/src/utils/exportUtils.ts`, memangkas 500+ baris duplikasi kode sehingga lebih mudah diaudit dan dipelihara.
-- **Standarisasi Ekspor**: Penyeragaman format penamaan file ekspor PDF/PPTX secara otomatis menjadi `GKI_(Nama GKI)_(Bagian)` dan peningkatan ekspor PDF multi-halaman rapi per chart.
 
 ---
 

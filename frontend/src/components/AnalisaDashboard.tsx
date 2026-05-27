@@ -294,41 +294,62 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
   }, [data, yearlyData, analisa2Filter]);
 
   const analisa3 = useMemo(() => {
-    const title = 'Kesenjangan Generasi (Regenerasi)';
+    const title = 'Kesenjangan Generasi & Missing Middle';
     const diriMassa = data['DIRI']?.massa || [];
 
     const chartData = diriMassa.map((d: any) => {
       const pemuda = d['Pemuda (20-30)'] || 0;
+      const dm = d['Dewasa Muda (31-39)'] || 0;
       const lansia = d['Senior (>60)'] || 0;
       return { sources: ['Data DIRI (Usia)'],
         name: d.Tahun,
         Pemuda: pemuda,
+        DewasaMuda: dm,
         Lansia: lansia
        };
     });
 
-    const hasData = chartData.some((d: any) => d.Pemuda > 0) && chartData.some((d: any) => d.Lansia > 0);
+    const hasData = chartData.some((d: any) => d.Pemuda > 0 || d.Lansia > 0 || d.DewasaMuda > 0);
     
     let isWarning = false;
-    let ratio = 0;
+    let ratioPemuda = 0;
+    let growthDM = 0;
+    let warningReason = '';
+
     if (chartData.length > 0) {
       const last = chartData[chartData.length - 1];
       if (last.Lansia > 0) {
-        ratio = last.Pemuda / last.Lansia;
-        if (ratio < 0.5) isWarning = true;
-      } else if (last.Pemuda === 0 && last.Lansia > 0) {
+        ratioPemuda = last.Pemuda / last.Lansia;
+      }
+      
+      if (chartData.length >= 3) {
+        const prev3 = chartData[chartData.length - 3];
+        growthDM = prev3.DewasaMuda > 0 ? ((last.DewasaMuda - prev3.DewasaMuda) / prev3.DewasaMuda) * 100 : 0;
+      } else if (chartData.length >= 2) {
+        const prev2 = chartData[chartData.length - 2];
+        growthDM = prev2.DewasaMuda > 0 ? ((last.DewasaMuda - prev2.DewasaMuda) / prev2.DewasaMuda) * 100 : 0;
+      }
+
+      if (ratioPemuda > 0 && ratioPemuda < 0.5) {
         isWarning = true;
+        warningReason = `Populasi Lansia mendominasi populasi Pemuda (Rasio < 0.5). Gereja berpotensi krisis masa depan jika regenerasi pemuda terhambat.`;
+      }
+      
+      if (growthDM < -10) {
+        isWarning = true;
+        const addMsg = `Terdapat penyusutan pada keluarga muda usia 31-39 sebesar ${growthDM.toFixed(1)}% (fenomena 'the missing middle'). Gereja disarankan melakukan survei jemaat terkait relevansi pelayanan/fasilitas/Sekolah Minggu.`;
+        warningReason = warningReason ? warningReason + " " + addMsg : addMsg;
       }
     }
 
     const table = (
       <table className="data-table">
         <thead>
-          <tr><th>Tahun</th><th>Populasi Pemuda (DIRI)</th><th>Populasi Lansia (DIRI)</th><th>Rasio Pemuda : Lansia</th></tr>
+          <tr><th>Tahun</th><th>Pemuda (20-30)</th><th>Keluarga Muda (31-39)</th><th>Lansia (&gt;60)</th></tr>
         </thead>
         <tbody>
           {chartData.map((row: any, i: number) => (
-            <tr key={i}><td>{row.name}</td><td>{row.Pemuda}</td><td>{row.Lansia}</td><td>{row.Lansia > 0 ? (row.Pemuda/row.Lansia).toFixed(2) : '-'}</td></tr>
+            <tr key={i}><td>{row.name}</td><td>{row.Pemuda}</td><td>{row.DewasaMuda}</td><td>{row.Lansia}</td></tr>
           ))}
         </tbody>
       </table>
@@ -342,20 +363,19 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
           <YAxis stroke="rgba(255,255,255,0.5)" />
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
           <Legend />
-          <Bar dataKey="Pemuda" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Generasi Pemuda (20-30)" />
-          <Bar dataKey="Lansia" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Generasi Lansia (>60)" />
+          <Bar dataKey="Pemuda" fill={COLORS.blue} radius={[4, 4, 0, 0]} name="Pemuda (20-30)" />
+          <Bar dataKey="DewasaMuda" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Keluarga Muda (31-39)" />
+          <Bar dataKey="Lansia" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Lansia (>60)" />
         </BarChart>
       </ResponsiveContainer>
     );
 
-    const description = "Memantau kelangsungan regenerasi gereja dengan membandingkan jumlah kelompok Pemuda melawan kelompok Lansia secara langsung menggunakan data DIRI (Tabel Massa).";
+    const description = "Memantau kelangsungan regenerasi gereja dengan membandingkan kelompok usia Pemuda, Keluarga Muda, dan Lansia dari data DIRI.";
     const dynamicText = chartData.length > 0 
-      ? `Rasio perbandingan antara Pemuda dan Lansia saat ini adalah ${ratio.toFixed(2)} (Setiap 1 Lansia, terdapat ${ratio.toFixed(2)} Pemuda).`
+      ? `Rasio Pemuda terhadap Lansia adalah ${ratioPemuda.toFixed(2)}, dan laju perubahan Keluarga Muda tercatat ${growthDM.toFixed(1)}%.`
       : `Menghitung data demografi...`;
       
-    const alertText = isWarning
-      ? `Populasi Lansia secara tidak seimbang mendominasi populasi Pemuda (Rasio < 0.5). Gereja mengalami 'aging population' dan krisis masa depan jika tidak ada upaya serius dalam persekutuan kaum muda.`
-      : null;
+    const alertText = isWarning ? warningReason : null;
 
     return { sources: ['Data DIRI (Usia)'], 
       isHidden: !hasData, 
@@ -969,87 +989,6 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
 
 
 
-  const analisa14 = useMemo(() => {
-    const title = 'Indeks Paralisis Administratif (Administrative Paralysis Index)';
-    const rapat = yearlyData['RAPAT'] || [];
-    const mutasi = data['Mutasi']?.pertambahan || [];
-    const mutasiYears = data['Mutasi']?.years || [];
-    
-    const chartData = [];
-    const allYears = Array.from(new Set([...rapat.map((x:any)=>x.Tanggal), ...mutasiYears])).filter(Boolean).sort() as number[];
-    
-    for (const year of allYears) {
-      const rapatYear = rapat.filter((x: any) => x.Tanggal === year);
-      const totalRapat = rapatYear.length;
-      
-      let totalMutasi = 0;
-      for (const m of mutasi) {
-        if (m[year]) {
-          totalMutasi += m[year];
-        }
-      }
-      
-      chartData.push({ name: year, TotalRapat: totalRapat, PertumbuhanJemaat: totalMutasi });
-    }
-    
-    const hasData = chartData.some((d: any) => d.TotalRapat > 0 || d.PertumbuhanJemaat > 0);
-    
-    let isWarning = false;
-    let rapatGrowth = 0;
-    let mutasiGrowth = 0;
-    
-    if (chartData.length >= 2) {
-      const last = chartData[chartData.length - 1];
-      const prev = chartData[chartData.length - 2];
-      
-      rapatGrowth = prev.TotalRapat > 0 ? ((last.TotalRapat - prev.TotalRapat) / prev.TotalRapat) * 100 : 0;
-      mutasiGrowth = prev.PertumbuhanJemaat > 0 ? ((last.PertumbuhanJemaat - prev.PertumbuhanJemaat) / prev.PertumbuhanJemaat) * 100 : 0;
-      
-      if (rapatGrowth > 20 && mutasiGrowth < 2) {
-        isWarning = true;
-      }
-    }
-
-    const table = (
-      <table className="data-table">
-        <thead>
-          <tr><th>Tahun</th><th>Jumlah Rapat Majelis</th><th>Angka Pertumbuhan Jemaat</th></tr>
-        </thead>
-        <tbody>
-          {chartData.map((row: any, i: number) => (
-            <tr key={i}><td>{row.name}</td><td>{row.TotalRapat}</td><td>{row.PertumbuhanJemaat}</td></tr>
-          ))}
-        </tbody>
-      </table>
-    );
-
-    const chart = (
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
-          <YAxis yAxisId="left" stroke="rgba(255,255,255,0.5)" />
-          <YAxis yAxisId="right" orientation="right" stroke="rgba(255,255,255,0.5)" />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
-          <Line yAxisId="left" type="monotone" dataKey="TotalRapat" name="Jumlah Rapat" stroke={COLORS.red} strokeWidth={3} />
-          <Line yAxisId="right" type="monotone" dataKey="PertumbuhanJemaat" name="Pertumbuhan Jemaat" stroke={COLORS.green} strokeWidth={3} />
-        </LineChart>
-      </ResponsiveContainer>
-    );
-
-    const description = "Mendeteksi apakah gereja terlalu berorientasi ke dalam (sibuk mengurus birokrasi) hingga mengorbankan waktu untuk pelayanan riil, yang berujung pada stagnasi pertumbuhan.";
-    const dynamicText = chartData.length >= 2 
-      ? `Tahun lalu rapat tumbuh ${rapatGrowth.toFixed(1)}%, sementara pertumbuhan jemaat berada di level ${mutasiGrowth.toFixed(1)}%.`
-      : `Menghitung indeks administratif...`;
-      
-    const alertText = isWarning
-      ? "Terjadi lonjakan intensitas rapat administratif yang tidak sebanding dengan pertumbuhan jemaat (paralisis administratif). Majelis Jemaat disarankan untuk mereformasi birokrasi, menyederhanakan pelaporan, dan mengalihkan setidaknya 20% jam rapat manajerial menjadi jam perlawatan atau penjangkauan (Bina & Lawat)."
-      : null;
-
-    return { sources: ['RAPAT', 'Mutasi (Pertambahan)'], isHidden: !hasData, title, icon: <AlertTriangle color={COLORS.red} />, description, dynamicText, chart, table, alertText, status: isWarning ? 'warning' : 'good' };
-  }, [yearlyData, data]);
-
   const analisa15 = useMemo(() => {
     const title = 'Risiko Konsentrasi Beban Finansial (Giving Fatigue)';
     const uangData = data['UANG'] || [];
@@ -1088,7 +1027,18 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
       uangGrowth = prev.Uang > 0 ? ((last.Uang - prev.Uang) / prev.Uang) * 100 : 0;
       hadirGrowth = prev.Kehadiran > 0 ? ((last.Kehadiran - prev.Kehadiran) / prev.Kehadiran) * 100 : 0;
       
-      if (uangGrowth > -5 && hadirGrowth < -15) {
+      let consistentDrop = false;
+      if (chartData.length >= 3) {
+         const prev2 = chartData[chartData.length - 3];
+         const hadirGrowthPrev = prev2.Kehadiran > 0 ? ((prev.Kehadiran - prev2.Kehadiran) / prev2.Kehadiran) * 100 : 0;
+         if (hadirGrowth < -10 && hadirGrowthPrev < -10) consistentDrop = true;
+         const totalHadirDrop = prev2.Kehadiran > 0 ? ((last.Kehadiran - prev2.Kehadiran) / prev2.Kehadiran) * 100 : 0;
+         if (totalHadirDrop < -15) consistentDrop = true;
+      } else {
+         if (hadirGrowth < -15) consistentDrop = true;
+      }
+      
+      if (uangGrowth >= -5 && consistentDrop) {
         isWarning = true;
       }
     }
@@ -1132,148 +1082,6 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
 
     return { sources: ['UANG', 'Keb. Minggu'], isHidden: !hasData, title, icon: <AlertTriangle color={COLORS.orange} />, description, dynamicText, chart, table, alertText, status: isWarning ? 'warning' : 'good' };
   }, [data, yearlyData]);
-
-  const analisa16 = useMemo(() => {
-    const title = 'Fenomena "Generasi yang Hilang" (Missing Middle)';
-    const diriMassa = data['DIRI']?.massa || [];
-    
-    const chartData = diriMassa.map((d: any) => {
-      return { 
-        name: d.Tahun,
-        DewasaMuda: d['Dewasa Muda (31-39)'] || 0,
-        Lansia: d['Senior (>60)'] || 0
-       };
-    });
-
-    const hasData = chartData.some((d: any) => d.DewasaMuda > 0);
-    
-    let isWarning = false;
-    let growthDM = 0;
-    
-    if (chartData.length >= 3) {
-      const last = chartData[chartData.length - 1].DewasaMuda;
-      const prev = chartData[chartData.length - 3].DewasaMuda; 
-      
-      growthDM = prev > 0 ? ((last - prev) / prev) * 100 : 0;
-      
-      if (growthDM < -10) {
-        isWarning = true;
-      }
-    }
-
-    const table = (
-      <table className="data-table">
-        <thead>
-          <tr><th>Tahun</th><th>Keluarga Muda (31-39 thn)</th><th>Lansia (&gt;60 thn)</th></tr>
-        </thead>
-        <tbody>
-          {chartData.map((row: any, i: number) => (
-            <tr key={i}><td>{row.name}</td><td>{row.DewasaMuda}</td><td>{row.Lansia}</td></tr>
-          ))}
-        </tbody>
-      </table>
-    );
-
-    const chart = (
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
-          <YAxis stroke="rgba(255,255,255,0.5)" />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
-          <Bar dataKey="DewasaMuda" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Keluarga Muda (31-39)" />
-          <Bar dataKey="Lansia" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Lansia (>60)" />
-        </BarChart>
-      </ResponsiveContainer>
-    );
-
-    const description = "Mendeteksi hilangnya kelompok keluarga muda (usia 31-40). Generasi ini sering pindah gereja jika ekosistem pelayanan anak atau fasilitas tidak mendukung.";
-    const dynamicText = chartData.length >= 3 
-      ? `Populasi keluarga muda berubah sebesar ${growthDM.toFixed(1)}% dalam 3 tahun terakhir.`
-      : `Menghitung demografi keluarga muda...`;
-      
-    const alertText = isWarning
-      ? "Terdapat penyusutan signifikan pada demografi keluarga muda (usia 31-39) atau fenomena 'the missing middle'. Gereja disarankan untuk segera melakukan jajak pendapat (survey) kepada keluarga muda terkait relevansi khotbah, daya dukung fasilitas, serta kualitas Sekolah Minggu, yang sering kali menjadi alasan utama eksodus pada rentang usia ini."
-      : null;
-
-    return { sources: ['DIRI (Usia 31-39)'], isHidden: !hasData, title, icon: <Users color={COLORS.red} />, description, dynamicText, chart, table, alertText, status: isWarning ? 'warning' : 'good' };
-  }, [data]);
-
-  const analisa17 = useMemo(() => {
-    const title = 'Indeks Beban Acara vs. Persekutuan Rutin (Event-Driven Entropy)';
-    const perayaan = yearlyData['Perayaan'] || [];
-    const persKategorial = yearlyData['Pers. Kategorial'] || [];
-    
-    // Ini sulit di-plot bulanan karena data sheet ini adalah per kegiatan (bukan time-series bulanan yg rata)
-    // Pendekatan alternatif: kita hitung rasio kehadiran perayaan vs persekutuan per tahun saja
-    // Karena kita tidak memiliki data bulanan di yearlyData, yearlyData mengelompokkan berdasarkan Tahun
-    // Tetapi kita bisa mengekstrak rasio ketimpangan.
-    
-    const chartData = [];
-    const allYears = Array.from(new Set([...perayaan.map((x:any)=>x.Tanggal), ...persKategorial.map((x:any)=>x.Tanggal)])).filter(Boolean).sort() as number[];
-
-    for (const year of allYears) {
-      const p = perayaan.find((x: any) => x.Tanggal === year);
-      const pk = persKategorial.find((x: any) => x.Tanggal === year);
-      
-      const avgP = p ? (p['Total Kehadiran'] || 0) : 0;
-      const avgPK = pk ? (pk['Total Kehadiran'] || 0) : 0;
-      
-      chartData.push({ name: year, Perayaan: avgP, Rutin: avgPK });
-    }
-
-    const hasData = chartData.some((d: any) => d.Perayaan > 0 && d.Rutin > 0);
-    
-    let isWarning = false;
-    let ratio = 0;
-    
-    if (chartData.length > 0) {
-      const last = chartData[chartData.length - 1];
-      if (last.Rutin > 0) {
-        ratio = last.Perayaan / last.Rutin;
-        if (ratio > 3) isWarning = true; // Jika acara besar 3x lipat rutinitas
-      }
-    }
-
-    const table = (
-      <table className="data-table">
-        <thead>
-          <tr><th>Tahun</th><th>Rata-rata Acara Perayaan</th><th>Rata-rata Persekutuan Rutin</th></tr>
-        </thead>
-        <tbody>
-          {chartData.map((row: any, i: number) => (
-            <tr key={i}><td>{row.name}</td><td>{row.Perayaan}</td><td>{row.Rutin}</td></tr>
-          ))}
-        </tbody>
-      </table>
-    );
-
-    const chart = (
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
-          <YAxis stroke="rgba(255,255,255,0.5)" />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
-          <Legend />
-          <Bar dataKey="Perayaan" fill={COLORS.red} radius={[4, 4, 0, 0]} name="Kehadiran Acara Besar" />
-          <Bar dataKey="Rutin" fill={COLORS.blue} radius={[4, 4, 0, 0]} name="Kehadiran Persekutuan Rutin" />
-        </BarChart>
-      </ResponsiveContainer>
-    );
-
-    const description = "Menilai apakah gereja mengidap kultur 'Event/Acara Besar' (spectator culture) yang menghabiskan anggaran, sehingga ibadah persekutuan yang sifatnya rutin (pemuridan) justru sepi.";
-    const dynamicText = chartData.length > 0 
-      ? `Perbandingan kehadiran Acara Besar vs Persekutuan Rutin adalah ${ratio.toFixed(1)}x lipat.`
-      : `Menghitung indeks beban acara...`;
-      
-    const alertText = isWarning
-      ? "Data memperlihatkan ketimpangan yang masif antara acara besar vs persekutuan rutin. Majelis perlu menyeimbangkan kalender kegiatan agar gereja tidak terjebak pada kultur kepanitiaan sesaat, melainkan berakar pada pertumbuhan pemuridan berkelanjutan."
-      : null;
-
-    return { sources: ['Perayaan', 'Pers. Kategorial'], isHidden: !hasData, title, icon: <AlertTriangle color={COLORS.red} />, description, dynamicText, chart, table, alertText, status: isWarning ? 'warning' : 'good' };
-  }, [yearlyData]);
 
   const analisa18 = useMemo(() => {
     const title = 'Indeks Lingkaran Tertutup (Closed-Circle Welcoming Index)';
@@ -1344,7 +1152,7 @@ export function AnalisaDashboard({ data, yearlyData }: Props) {
     'Peringatan Krisis Regenerasi Pemimpin'
   ];
 
-  const allModules = [analisa2, analisa3, analisa4, analisa6, analisa7, analisa8, analisa10, analisa12, analisa13, analisa14, analisa15, analisa16, analisa17, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
+  const allModules = [analisa2, analisa3, analisa4, analisa6, analisa7, analisa8, analisa10, analisa12, analisa13, analisa15, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
   
   const activeCards = allModules
     .filter((c: any) => c && (!c.isHidden || showHidden))

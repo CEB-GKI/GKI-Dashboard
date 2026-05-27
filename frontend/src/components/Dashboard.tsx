@@ -244,7 +244,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
         } else if (selectedEvents.length === 1) {
           activeMetrics.forEach(metric => {
             const lower = metric.toLowerCase();
-            if (!lower.includes('sub total') && !lower.includes('on-site') && !lower.includes('total kehadiran')) {
+            if (!lower.includes('total') && !lower.includes('on-site')) {
               grouped[groupKey][metric] = parseFloat(row[metric]) || 0;
             }
           });
@@ -650,7 +650,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                       <XAxis dataKey="name" tickFormatter={d => { const fmt = formatXAxis(d); return typeof fmt === 'string' ? fmt.split(' - ')[0] : fmt; }} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dy={10} />
                       <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)' }} axisLine={false} tickLine={false} dx={-10} />
-                      <Tooltip contentStyle={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)', color: '#fff' }} itemStyle={{ color: '#fff' }} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} formatter={(value: any, name: any) => [value, formatChartKey(name as string, sheetName, false)]} labelFormatter={(label) => formatXAxis(label)} />
+                      <Tooltip shared={!(sheetName === 'Perayaan' && perayaanFilter !== 'Semua Perayaan' && !perayaanCompare1 && !perayaanCompare2 && !perayaanCompare3)} contentStyle={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)', color: '#fff' }} itemStyle={{ color: '#fff' }} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} formatter={(value: any, name: any) => [value, formatChartKey(name as string, sheetName, false)]} labelFormatter={(label) => formatXAxis(label)} />
                       <Legend wrapperStyle={{ paddingTop: '20px' }} formatter={(value: any) => formatChartKey(value as string, sheetName, false)} />
                       {chartActiveKeys.map((key, idx) => (
                         <Bar key={`bar-${key}`} dataKey={key} fill={getColorForKey(key, idx)} fillOpacity={key.includes(compareMetric) && compareMetric !== '' ? 0.6 : 1} radius={[4, 4, 0, 0]} />

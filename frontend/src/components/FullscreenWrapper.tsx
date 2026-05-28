@@ -68,7 +68,14 @@ export function FullscreenWrapper({ children, className = '', style = {} }: { ch
         )}
       </button>
       
-      <div style={{ height: isFullscreen ? '100%' : 'auto', width: '100%', minHeight: isFullscreen ? '100vh' : 'auto' }}>
+      <div style={{ 
+        height: isFullscreen ? '100%' : 'auto', 
+        width: '100%', 
+        minHeight: isFullscreen ? '100vh' : 'auto',
+        display: isFullscreen ? 'flex' : 'block',
+        flexDirection: isFullscreen ? 'column' : undefined,
+        justifyContent: isFullscreen ? 'center' : undefined
+      }}>
         {children}
       </div>
     </div>

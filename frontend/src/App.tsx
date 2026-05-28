@@ -477,9 +477,13 @@ function App() {
                         Bagi Anda yang menemukan bug atau kesalahan sistem, mohon untuk memberikan <strong>tangkapan layar (<em>screenshot</em>)</strong> dan <strong>keterangan lengkap mengenai bug-nya</strong>.
                       </p>
                       <p style={{ margin: 0 }}>
-                        Laporan dapat Anda kirimkan ke email berikut:<br/>
-                        <a href="mailto:christianeb.gki@gmail.com" style={{ color: '#60a5fa', textDecoration: 'none', fontWeight: 600, fontSize: '1.1rem', display: 'inline-block', marginTop: '8px' }}>
-                          ✉️ christianeb.gki@gmail.com
+                        Laporan dapat Anda buat melalui GitHub Repository kami di:<br/>
+                        <a href="https://github.com/CEB-GKI/GKI-Dashboard/issues" target="_blank" rel="noreferrer" style={{ color: '#60a5fa', textDecoration: 'none', fontWeight: 600, fontSize: '1.05rem', display: 'inline-block', marginTop: '8px', marginBottom: '16px' }}>
+                          🔗 CEB-GKI/GKI-Dashboard
+                        </a>
+                        <br/>Atau kirimkan melalui email ke:<br/>
+                        <a href="mailto:ceb.gki.github@gmail.com" style={{ color: '#60a5fa', textDecoration: 'none', fontWeight: 600, fontSize: '1.05rem', display: 'inline-block', marginTop: '8px' }}>
+                          ✉️ ceb.gki.github@gmail.com
                         </a>
                       </p>
                     </div>

@@ -68,6 +68,11 @@ def parse_kebaktian(df, sheet_type="Keb. Minggu"):
             "anggota": 9, "simpatisan": 12, "gki_lain": 15, "penatua": 18,
             "gsm": None, "pemusik": 21, "multimedia": 24, "subtotal": 27,
             "onsite": 30, "total": 33
+        },
+        "Pers. Lainnya": {
+            "anggota": 5, "simpatisan": 8, "gki_lain": 11, "penatua": 14,
+            "gsm": 17, "pemusik": 20, "multimedia": 23, "subtotal": 26,
+            "onsite": 29, "total": 32
         }
     }
     

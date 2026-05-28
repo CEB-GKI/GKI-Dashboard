@@ -18,14 +18,14 @@ export const exportPDF = async (
     }
     
     if (pages.length === 0) {
-      const canvas = await html2canvas(containerRef.current, { scale: 2, backgroundColor: '#070B14' });
-      const imgData = canvas.toDataURL('image/png');
+      const canvas = await html2canvas(containerRef.current, { scale: 1.5, backgroundColor: '#070B14' });
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
       const pdf = new jsPDF({
         orientation: canvas.width > canvas.height ? 'l' : 'p',
         unit: 'px',
         format: [canvas.width, canvas.height]
       });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
       pdf.save(`GKI_${churchName ? churchName.replace(/\s+/g, '_') : 'Waha'}_${sheetName.replace(/\s+/g, '_')}.pdf`);
       return;
     }
@@ -33,8 +33,8 @@ export const exportPDF = async (
     let pdf: any = null;
     for (let i = 0; i < pages.length; i++) {
       const el = pages[i] as HTMLElement;
-      const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#070B14' });
-      const imgData = canvas.toDataURL('image/png');
+      const canvas = await html2canvas(el, { scale: 1.5, backgroundColor: '#070B14' });
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
       
       if (i === 0) {
         pdf = new jsPDF({
@@ -42,11 +42,11 @@ export const exportPDF = async (
           unit: 'px',
           format: [canvas.width, canvas.height]
         });
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
       } else if (pdf) {
         pdf.addPage([canvas.width, canvas.height], canvas.width > canvas.height ? 'l' : 'p');
         pdf.setPage(i + 1);
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
       }
     }
     if (pdf) {
@@ -74,8 +74,8 @@ export const exportPPTX = async (
     const pres = new pptxgen();
     
     const captureAndAddSlide = async (element: HTMLElement) => {
-      const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#070B14' });
-      const imgData = canvas.toDataURL('image/png');
+      const canvas = await html2canvas(element, { scale: 1.5, backgroundColor: '#070B14' });
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
       const slide = pres.addSlide();
       
       const slideWidth = 10;

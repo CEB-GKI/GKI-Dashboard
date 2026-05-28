@@ -87,6 +87,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
     return { activeMetrics: active, emptyMetrics: empty };
   }, [allKebMingguMetrics, data]);
 
+  const hasHybridMetricsAvailable = useMemo(() => {
+    return allKebMingguMetrics.some(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('online') || k.toLowerCase().includes('onsite'));
+  }, [allKebMingguMetrics]);
+
   const availablePeriods = useMemo(() => {
     if (!isSupportedChartSheet || !data) return [];
     const periods = new Set<string>();
@@ -383,13 +387,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
   
   const chartEmptyMetrics = chartKeys.filter(k => chartData.every(row => !row[k] || row[k] === 0));
   const chartActiveKeys = chartKeys.filter(k => !chartEmptyMetrics.includes(k));
-  
-  const hasHybridChartData = chartActiveKeys.some(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('online') || k.toLowerCase().includes('onsite'));
 
   const yearlyEmptyMetrics = yearlyChartKeys.filter(k => yearlyChartData.every(row => !row[k] || row[k] === 0));
   const activeYearlyKeys = yearlyChartKeys.filter(k => !yearlyEmptyMetrics.includes(k));
-  
-  const hasHybridYearlyData = activeYearlyKeys.some(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('online') || k.toLowerCase().includes('onsite'));
   
   const emptyYearlyRows: string[] = [];
   const activeYearlyChartData = yearlyChartData.filter(row => {
@@ -752,7 +752,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                     </table>
                   </div>
 
-                  {hasHybridChartData && (
+                  {hasHybridMetricsAvailable && (
                     <div style={{ marginTop: '16px', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', opacity: 0.8 }}>
                       * Catatan: Struktur LKKJ v.3.1 SW Jabar belum mengakomodasi bentuk hybrid, jadi ada kemungkinan kesalahan pengolahan data pada pembagian jumlah On-Site & Online.
                     </div>
@@ -942,7 +942,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                     </table>
                   </div>
 
-                  {hasHybridYearlyData && (
+                  {hasHybridMetricsAvailable && (
                     <div style={{ marginTop: '16px', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', opacity: 0.8 }}>
                       * Catatan: Struktur LKKJ v.3.1 SW Jabar belum mengakomodasi bentuk hybrid, jadi ada kemungkinan kesalahan pengolahan data pada pembagian jumlah On-Site & Online.
                     </div>

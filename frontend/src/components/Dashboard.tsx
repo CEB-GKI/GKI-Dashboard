@@ -668,7 +668,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '16px', paddingRight: '48px' }}>
                 <h3 style={{ margin: 0 }}>Grafik Perbandingan</h3>
                 {isSupportedChartSheet && activeMetrics.length > 0 && (
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>

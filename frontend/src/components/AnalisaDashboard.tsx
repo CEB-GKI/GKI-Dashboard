@@ -1238,6 +1238,15 @@ const analisa3 = useMemo(() => {
       return aHidden - bHidden;
     });
 
+  const missingSources = Array.from(new Set(
+    allModules.filter(m => m.isHidden).flatMap(m => m.sources || [])
+  ));
+  
+  const warnings = allModules.filter(m => !m.isHidden && m.status === 'warning').map(m => m.title);
+  const goods = allModules.filter(m => !m.isHidden && m.status === 'good').map(m => m.title);
+  
+  const churchName = data['church_name'] ? `GKI ${data['church_name']}` : "Gereja (Belum dinamai)";
+
   if (!data || Object.keys(data).length === 0) {
     return <div className="glass-panel" style={{ padding: '24px', textAlign: 'center' }}>Silakan muat file Excel terlebih dahulu untuk melihat analisa.</div>;
   }
@@ -1285,6 +1294,51 @@ const analisa3 = useMemo(() => {
           <Info size={48} style={{ margin: '0 auto 16px auto', opacity: 0.5 }} />
           <p style={{ margin: 0 }}>Belum ada data yang cukup untuk menampilkan satupun analisa.</p>
           <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>Centang "Tunjukkan seluruh Analisa" di atas untuk melihat modul yang membutuhkan tambahan data.</p>
+        </div>
+      )}
+
+      {activeCards.length > 0 && (
+        <div className="glass-panel" style={{ padding: '32px', marginTop: '16px', borderTop: `4px solid ${COLORS.purple}` }}>
+          <h2 style={{ margin: '0 0 16px 0', fontSize: '1.4rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <FileText color={COLORS.purple} />
+            Kesimpulan Eksekutif (Ringkasan Teks)
+          </h2>
+          <div style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1.05rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <p style={{ margin: 0 }}>
+              Berdasarkan seluruh agregasi data kehadiran dalam berbagai jenis Kebaktian serta data Administrasi (seperti laporan keuangan, mutasi jemaat, dan statistik tenaga pelayanan) yang telah diunggah oleh <strong>{churchName}</strong>, sistem telah menghasilkan rangkuman profil dan tren yang tergambar secara komprehensif dari hasil analisa tabel di atas.
+            </p>
+            
+            {goods.length > 0 && (
+              <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.05)', borderRadius: '8px', borderLeft: `4px solid ${COLORS.green}` }}>
+                <strong style={{ color: COLORS.green }}>Indikator Positif / Aspek Sehat:</strong>
+                <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+                  {goods.map((g, i) => <li key={i}>{g}</li>)}
+                </ul>
+              </div>
+            )}
+
+            {warnings.length > 0 && (
+              <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '8px', borderLeft: `4px solid ${COLORS.red}` }}>
+                <strong style={{ color: COLORS.red }}>⚠️ Hal-hal Kritis yang Perlu Diperhatikan Majelis Jemaat:</strong>
+                <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
+                  {warnings.map((w, i) => <li key={i}>{w}</li>)}
+                </ul>
+                <p style={{ margin: '12px 0 0 0', fontSize: '0.95rem' }}>
+                  <em>Mohon merujuk kembali pada detail grafik peringatan (kotak berwarna merah/kuning) di atas untuk melihat deskripsi lengkap beserta saran intervensi (rekomendasi) yang perlu segera ditindaklanjuti.</em>
+                </p>
+              </div>
+            )}
+
+            {missingSources.length > 0 && (
+              <div style={{ padding: '16px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '8px', borderLeft: `4px solid ${COLORS.blue}` }}>
+                <strong style={{ color: COLORS.blue }}>Rekomendasi Kelengkapan Data:</strong>
+                <p style={{ margin: '8px 0 0 0' }}>
+                  Agar analisa prediktif dapat berjalan lebih dalam dan algoritma lainnya dapat terbuka, mohon lengkapi pengisian data (*sheet*) berikut yang masih berstatus kosong di LKKJ Anda: 
+                  <strong> {missingSources.join(', ')}</strong>.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

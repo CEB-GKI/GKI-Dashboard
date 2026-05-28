@@ -1240,15 +1240,16 @@ const analisa3 = useMemo(() => {
   const churchName = data['church_name'] ? `GKI ${data['church_name']}` : "Gereja (Belum dinamai)";
 
   const yoyData = useMemo(() => {
-    // 1. Total Kehadiran Seluruh Kebaktian (Minggu, Kategorial, Persekutuan, Perayaan)
+    // 1. Total Kehadiran Seluruh Kebaktian (Minggu, Kategorial, Pers. Kategorial, Pers. Lainnya, Perayaan)
     const allKebaktianSheets = ['Keb. Minggu', 'Keb. Kategorial', 'Pers. Kategorial', 'Pers. Lainnya', 'Perayaan'];
     const kehadiranByYear: Record<number, number> = {};
     
     allKebaktianSheets.forEach(sheetName => {
       if (yearlyData[sheetName]) {
         yearlyData[sheetName].forEach((row: any) => {
-          const year = parseInt(row.Tanggal);
-          if (year && !isNaN(year)) {
+          const yearMatch = String(row.Tanggal).match(/20\d{2}/);
+          if (yearMatch) {
+            const year = parseInt(yearMatch[0]);
             kehadiranByYear[year] = (kehadiranByYear[year] || 0) + (row['Total Kehadiran'] || 0);
           }
         });
@@ -1256,64 +1257,87 @@ const analisa3 = useMemo(() => {
     });
 
     // 2. Total Penerimaan (UANG)
-    const uangByYear: Record<number, number> = {};
-    if (yearlyData['UANG']) {
-      yearlyData['UANG'].forEach((row: any) => {
-        const year = parseInt(row.Tahun);
-        if (year && !isNaN(year)) {
-          let total = 0;
-          Object.keys(row).forEach(k => {
-            if (k !== 'Tahun' && k !== 'Bulan' && k !== 'Total Bulanan') {
-              total += (row[k] || 0);
-            }
-          });
-          uangByYear[year] = (uangByYear[year] || 0) + total;
-        }
+    // Berdasarkan "akumulasi terakhir keuangan (kolom E dan I)"
+    // Di parser.ts, "Akumulasi (Tahun Lalu)" adalah col E, "Akumulasi" adalah col I
+    let uangCurr = 0;
+    let uangPrev = 0;
+    let currentYearUang = 0;
+    
+    if (data['UANG'] && data['UANG'].length > 0) {
+      // Cari tahun terbaru dari data UANG
+      const yearsSet = new Set<number>();
+      data['UANG'].forEach((r: any) => {
+        const y = parseInt(String(r.Tanggal).split('-')[0]);
+        if (!isNaN(y)) yearsSet.add(y);
       });
+      const maxYear = Math.max(...Array.from(yearsSet));
+      currentYearUang = maxYear;
+      
+      // Ambil akumulasi terakhir dari baris Total Penerimaan (biasanya No = 14)
+      const lastMonthRecords = data['UANG'].filter((r: any) => parseInt(String(r.Tanggal).split('-')[0]) === maxYear);
+      // Urutkan berdasarkan tanggal (asc), ambil tanggal terakhir
+      lastMonthRecords.sort((a: any, b: any) => new Date(a.Tanggal).getTime() - new Date(b.Tanggal).getTime());
+      
+      if (lastMonthRecords.length > 0) {
+        const lastDate = lastMonthRecords[lastMonthRecords.length - 1].Tanggal;
+        // Cari row "TOTAL PENERIMAAN" di tanggal terakhir itu
+        const totalRows = lastMonthRecords.filter((r: any) => r.Tanggal === lastDate && String(r.Jam).toLowerCase().includes('total'));
+        if (totalRows.length > 0) {
+          uangCurr = totalRows[totalRows.length - 1]['Akumulasi'] || 0;
+          uangPrev = totalRows[totalRows.length - 1]['Akumulasi (Tahun Lalu)'] || 0;
+        } else {
+          // Jika tidak ada row total, cari row terakhir saja
+          uangCurr = lastMonthRecords[lastMonthRecords.length - 1]['Akumulasi'] || 0;
+          uangPrev = lastMonthRecords[lastMonthRecords.length - 1]['Akumulasi (Tahun Lalu)'] || 0;
+        }
+      }
     }
 
     // 3. Total Jemaat (DIRI - Massa)
     const diriByYear: Record<number, number> = {};
     if (data['DIRI'] && data['DIRI'].massa) {
       data['DIRI'].massa.forEach((row: any) => {
-        const year = parseInt(row.Tahun);
-        if (year && !isNaN(year)) {
+        const yearMatch = String(row.Tahun).match(/20\d{2}/);
+        if (yearMatch) {
+          const year = parseInt(yearMatch[0]);
           diriByYear[year] = row['Total'] || 0;
         }
       });
     }
 
     // 4. Mutasi Bersih
-    const mutasiByYear: Record<number, number> = {};
-    if (data['Mutasi'] && data['Mutasi'].rekapitulasi) {
-      data['Mutasi'].rekapitulasi.forEach((row: any) => {
-        const yearMatch = String(row['Tahun']).match(/\d{4}/);
-        if (yearMatch) {
-          const year = parseInt(yearMatch[0]);
-          mutasiByYear[year] = (row['Total Penambahan'] || 0) - (row['Total Pengurangan'] || 0);
+    // Berdasarkan "kolom B, C, D row 46-48" (Pertumbuhan Jemaat)
+    let mutasiCurr = 0;
+    let mutasiPrev = 0;
+    let currentYearMutasi = 0;
+
+    if (data['Mutasi'] && data['Mutasi'].hasil) {
+      const pertumbuhanRows = data['Mutasi'].hasil.filter((r: any) => String(r.Kategori).toLowerCase().includes('pertumbuhan'));
+      if (pertumbuhanRows.length > 0) {
+        const pRow = pertumbuhanRows[0];
+        // pRow punya keys tahun, misal 2024, 2025
+        const keys = Object.keys(pRow).filter(k => k.match(/20\d{2}/)).map(Number).sort((a,b) => b - a);
+        if (keys.length > 0) {
+          currentYearMutasi = keys[0];
+          mutasiCurr = pRow[keys[0]] || 0;
+          if (keys.length > 1) {
+            mutasiPrev = pRow[keys[1]] || 0;
+          }
         }
-      });
+      }
     }
 
-    // Get the latest two years from all datasets
-    const allYears = Array.from(new Set([
-      ...Object.keys(kehadiranByYear),
-      ...Object.keys(uangByYear),
-      ...Object.keys(diriByYear),
-      ...Object.keys(mutasiByYear)
-    ])).map(Number).sort((a, b) => b - a);
-
-    if (allYears.length < 2) return null;
-
-    const currentYear = allYears[0];
-    const prevYear = allYears[1];
+    // Tentukan master year dari DIRI
+    const diriYears = Object.keys(diriByYear).map(Number).sort((a, b) => b - a);
+    const currentYear = diriYears.length > 0 ? diriYears[0] : new Date().getFullYear();
+    const prevYear = diriYears.length > 1 ? diriYears[1] : currentYear - 1;
 
     const getTrend = (curr: number, prev: number) => {
       if (!prev) return { text: 'Tidak ada data tahun sebelumnya', isPositive: null, pct: 0 };
       const diff = curr - prev;
       const pct = (diff / prev) * 100;
       return {
-        text: `${diff > 0 ? 'Naik' : 'Turun'} ${Math.abs(pct).toFixed(1)}% dibandingkan tahun ${prevYear}`,
+        text: `${diff > 0 ? 'Naik' : 'Turun'} ${Math.abs(pct).toFixed(1)}% dibandingkan tahun sebelumnya`,
         isPositive: diff > 0,
         pct
       };
@@ -1323,9 +1347,9 @@ const analisa3 = useMemo(() => {
       currentYear,
       prevYear,
       kehadiran: { curr: kehadiranByYear[currentYear] || 0, prev: kehadiranByYear[prevYear] || 0, trend: getTrend(kehadiranByYear[currentYear] || 0, kehadiranByYear[prevYear] || 0) },
-      uang: { curr: uangByYear[currentYear] || 0, prev: uangByYear[prevYear] || 0, trend: getTrend(uangByYear[currentYear] || 0, uangByYear[prevYear] || 0) },
+      uang: { curr: uangCurr, prev: uangPrev, trend: getTrend(uangCurr, uangPrev) },
       diri: { curr: diriByYear[currentYear] || 0, prev: diriByYear[prevYear] || 0, trend: getTrend(diriByYear[currentYear] || 0, diriByYear[prevYear] || 0) },
-      mutasi: { curr: mutasiByYear[currentYear] || 0, prev: mutasiByYear[prevYear] || 0, trend: getTrend(mutasiByYear[currentYear] || 0, mutasiByYear[prevYear] || 0) }
+      mutasi: { curr: mutasiCurr, prev: mutasiPrev, trend: getTrend(mutasiCurr, mutasiPrev) }
     };
   }, [yearlyData, data]);
 

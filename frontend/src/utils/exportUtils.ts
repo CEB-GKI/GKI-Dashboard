@@ -18,7 +18,7 @@ export const exportPDF = async (
     }
     
     if (pages.length === 0) {
-      const canvas = await html2canvas(containerRef.current, { scale: 2 });
+      const canvas = await html2canvas(containerRef.current, { scale: 2, backgroundColor: '#070B14' });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
         orientation: canvas.width > canvas.height ? 'l' : 'p',
@@ -33,7 +33,7 @@ export const exportPDF = async (
     let pdf: any = null;
     for (let i = 0; i < pages.length; i++) {
       const el = pages[i] as HTMLElement;
-      const canvas = await html2canvas(el, { scale: 2 });
+      const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#070B14' });
       const imgData = canvas.toDataURL('image/png');
       
       if (i === 0) {
@@ -74,7 +74,7 @@ export const exportPPTX = async (
     const pres = new pptxgen();
     
     const captureAndAddSlide = async (element: HTMLElement) => {
-      const canvas = await html2canvas(element, { scale: 2 });
+      const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#070B14' });
       const imgData = canvas.toDataURL('image/png');
       const slide = pres.addSlide();
       

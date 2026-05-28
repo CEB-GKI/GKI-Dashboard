@@ -1235,7 +1235,7 @@ const analisa3 = useMemo(() => {
 
   const missingSources = Array.from(new Set(cardsHidden.flatMap(m => m.sources || [])));
   const warnings = cardsWarning.map(m => m.title);
-  const goods = cardsGood.map(m => m.title);
+
   
   const churchName = data['church_name'] ? `GKI ${data['church_name']}` : "Gereja (Belum dinamai)";
 
@@ -1457,19 +1457,7 @@ const analisa3 = useMemo(() => {
       {/* 2. POSITIVE SECTION */}
       {cardsGood.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ padding: '24px', background: 'rgba(16, 185, 129, 0.03)', borderLeft: `4px solid ${COLORS.green}` }}>
-            <h3 style={{ margin: '0 0 12px 0', color: COLORS.green, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <CheckCircle size={24} />
-              Indikator Positif & Aspek Sehat
-            </h3>
-            <p style={{ margin: '0 0 12px 0', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-              Gereja menunjukkan tren pertumbuhan dan pengelolaan yang sangat baik pada area-area berikut:
-            </p>
-            <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-primary)', lineHeight: '1.6' }}>
-              {goods.map((g, i) => <li key={i}><strong>{g}</strong></li>)}
-            </ul>
-          </div>
-          
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))', gap: '24px' }}>
             {cardsGood.map((card: any, idx: number) => (
               <AnalisaCard key={idx} {...card} forceShow={false} />

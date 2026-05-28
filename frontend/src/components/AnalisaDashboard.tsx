@@ -114,6 +114,7 @@ function AnalisaCard({ title, icon, description, chart, table, alertText, status
 
 
 export function AnalisaDashboard({ data, yearlyData }: Props) {
+  const [isKehadiranFullscreen, setIsKehadiranFullscreen] = useState(false);
   const [analisa2Filter, setAnalisa2Filter] = useState('All');
   const [analisa13Time, setAnalisa13Time] = useState<'1m'|'3m'|'1y'|'all'>('all');
   const [analisa13Compare, setAnalisa13Compare] = useState(false);

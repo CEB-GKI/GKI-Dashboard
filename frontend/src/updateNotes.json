@@ -2,6 +2,8 @@
   {
     "timestamp": "28 Mei 2026",
     "changes": [
+      "Verifikasi dan penambahan dukungan kompatibilitas penuh untuk format LKKJ versi 3.4 tahun 2025.",
+      "Penyempurnaan deteksi otomatis kehadiran online/onsite (Aktivitas Hybrid) berdasarkan perhitungan rasio jumlah kehadiran riil.",
       "Perbaikan UI: Membuat tabel ringkasan data membalik letaknya (menjadi vertikal) ketika grafik hanya menampilkan data tunggal, dan memungkinkan fitur shared tooltip ketika menyortir grafik data satuan.",
       "Perbaikan UI: Perbaikan nama periode menjadi berwujud bulan & tahun (mis. April 2025) pada tabel Perbandingan Penerimaan Kebaktian dan Luar Kebaktian.",
       "Otomatisasi pengenalan dan highlight perbedaan terbesar pada tren (kenaikan/penurunan terdalam antar periode) untuk Perbandingan Penerimaan.",

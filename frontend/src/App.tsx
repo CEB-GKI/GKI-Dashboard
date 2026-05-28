@@ -460,14 +460,14 @@ function App() {
                 <div className="glass-panel" style={{ padding: '32px' }}>
                   <h2 style={{ marginTop: 0, marginBottom: '24px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '16px' }}>Informasi Aplikasi</h2>
                   <div style={{ color: 'var(--text-secondary)', lineHeight: 1.6, fontSize: '1.05rem' }}>
-                    <p>Aplikasi Dashboard LKKJ ini adalah versi <strong>1.0</strong>, resmi dirilis pada tanggal <strong>25 Mei 2026</strong>.</p>
-                    <p>Dashboard ini secara khusus dirancang dan digunakan untuk menganalisa format LKKJ <strong>versi 3.1 GKI SW Jabar</strong>.</p>
+                    <p>Aplikasi Dashboard LKKJ ini adalah versi <strong>1.1</strong>, diperbarui pada tanggal <strong>28 Mei 2026</strong>.</p>
+                    <p>Dashboard ini secara khusus dirancang dan digunakan untuk menganalisa format LKKJ <strong>versi 3.1 dan 3.4 GKI SW Jabar</strong>.</p>
                     
                     <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
                       <h4 style={{ margin: '0 0 8px 0', color: '#fff' }}>Catatan Analisis Data</h4>
                       <p style={{ margin: 0, fontSize: '0.95rem' }}>
                         Saat ini, aplikasi baru memproses data dari <em>sheet</em> utama berikut: <strong>Keb. Minggu, Keb. Kategorial, Pers. Kategorial, Pers. Lainnya, Perayaan, RAPAT, UANG, DIRI, TENAGA, dan Mutasi</strong>. 
-                        <em>Sheet-sheet</em> lain di luar daftar tersebut yang ada di dalam database LKKJ versi 3.1 belum diproses oleh aplikasi ini.
+                        <em>Sheet-sheet</em> lain di luar daftar tersebut yang ada di dalam database LKKJ versi 3.1 maupun 3.4 belum diproses oleh aplikasi ini.
                       </p>
                     </div>
 

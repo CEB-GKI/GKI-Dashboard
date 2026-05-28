@@ -383,9 +383,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
   
   const chartEmptyMetrics = chartKeys.filter(k => chartData.every(row => !row[k] || row[k] === 0));
   const chartActiveKeys = chartKeys.filter(k => !chartEmptyMetrics.includes(k));
+  
+  const hasHybridChartData = chartActiveKeys.some(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('online') || k.toLowerCase().includes('onsite'));
 
   const yearlyEmptyMetrics = yearlyChartKeys.filter(k => yearlyChartData.every(row => !row[k] || row[k] === 0));
   const activeYearlyKeys = yearlyChartKeys.filter(k => !yearlyEmptyMetrics.includes(k));
+  
+  const hasHybridYearlyData = activeYearlyKeys.some(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('online') || k.toLowerCase().includes('onsite'));
   
   const emptyYearlyRows: string[] = [];
   const activeYearlyChartData = yearlyChartData.filter(row => {
@@ -747,6 +751,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                       )}
                     </table>
                   </div>
+
+                  {hasHybridChartData && (
+                    <div style={{ marginTop: '16px', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', opacity: 0.8 }}>
+                      * Catatan: Struktur LKKJ v.3.1 SW Jabar belum mengakomodasi bentuk hybrid, jadi ada kemungkinan kesalahan pengolahan data pada pembagian jumlah On-Site & Online.
+                    </div>
+                  )}
                 </div>
 
                 {isSupportedChartSheet && chartEmptyMetrics.length > 0 && (
@@ -931,6 +941,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                       )}
                     </table>
                   </div>
+
+                  {hasHybridYearlyData && (
+                    <div style={{ marginTop: '16px', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', opacity: 0.8 }}>
+                      * Catatan: Struktur LKKJ v.3.1 SW Jabar belum mengakomodasi bentuk hybrid, jadi ada kemungkinan kesalahan pengolahan data pada pembagian jumlah On-Site & Online.
+                    </div>
+                  )}
 
                   {isSupportedChartSheet && (yearlyEmptyMetrics.length > 0 || emptyYearlyRows.length > 0) && (
                     <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(255, 100, 100, 0.05)', borderLeft: '4px solid var(--accent)', borderRadius: '4px', fontSize: '13px', color: 'var(--text-secondary)' }}>

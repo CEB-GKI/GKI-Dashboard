@@ -536,9 +536,9 @@ function parseTenagaData(sheetData: any[][]) {
 export function parseMutasiData(sheetData: any[][]) {
   const mutasiData = {
     years: [
-      String(sheetData[6]?.[1] || "2023 - 2024"),
-      String(sheetData[6]?.[2] || "2024 - 2025"),
-      String(sheetData[6]?.[3] || "2025 - 2026")
+      String(sheetData[6]?.[1] || "2023 - 2024").trim(),
+      String(sheetData[7]?.[2] || sheetData[6]?.[2] || "2024 - 2025").trim(),
+      String(sheetData[8]?.[3] || sheetData[6]?.[3] || "2025 - 2026").trim()
     ],
     alasan_mutasi: [] as any[],
     pertambahan: [] as any[],

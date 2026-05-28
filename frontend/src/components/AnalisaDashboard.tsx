@@ -1312,16 +1312,14 @@ const analisa3 = useMemo(() => {
       const pertumbuhanRows = data['Mutasi'].hasil.filter((r: any) => String(r.Kategori).toLowerCase().includes('pertumbuhan'));
       if (pertumbuhanRows.length > 0) {
         const pRow = pertumbuhanRows[0];
-        const keys = Object.keys(pRow).filter(k => k.match(/20\d{2}/));
-        keys.sort((a, b) => {
-          const yearA = parseInt(a.match(/20\d{2}/)![0]);
-          const yearB = parseInt(b.match(/20\d{2}/)![0]);
-          return yearB - yearA;
-        });
-        if (keys.length > 0) {
-          mutasiCurr = pRow[keys[0]] || 0;
-          if (keys.length > 1) {
-            mutasiPrev = pRow[keys[1]] || 0;
+        const years = data['Mutasi'].years;
+        if (years && years.length >= 3) {
+          mutasiCurr = pRow[years[2]] || 0;
+          mutasiPrev = pRow[years[1]] || 0;
+          // In case the last year is empty
+          if (mutasiCurr === 0 && pRow[years[1]] !== 0) {
+            mutasiCurr = pRow[years[1]];
+            mutasiPrev = pRow[years[0]] || 0;
           }
         }
       }

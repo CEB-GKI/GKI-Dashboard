@@ -246,7 +246,10 @@ function parseUang(sheetData: any[][]) {
     if (isDateRow) continue;
 
     if (currentDate !== "Unknown Date" && jamRaw) {
-      if (lowerJam.includes('jumlah') || lowerJam.includes('total') || lowerJam.includes('subtotal') || lowerJam === 'jam' || lowerJam.includes('rata-rata') || lowerJam.includes('jenis persidangan') || lowerJam.includes('jenis penerimaan')) {
+      if (lowerJam.includes('jumlah') || lowerJam.includes('subtotal') || lowerJam === 'jam' || lowerJam.includes('rata-rata') || lowerJam.includes('jenis persidangan') || lowerJam.includes('jenis penerimaan')) {
+        continue;
+      }
+      if (lowerJam.includes('total') && !lowerJam.includes('total penerimaan')) {
         continue;
       }
       

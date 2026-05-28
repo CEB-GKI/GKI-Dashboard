@@ -8,8 +8,9 @@
     "build:server": "tsc -b && vite build --mode production",
     "prebuild:html": "node scripts/sync-readme.cjs",
     "build:html": "tsc -b && vite build --mode singlefile",
+    "postbuild:html": "node scripts/cleanup.cjs",
     "build": "npm run build:server",
-    "postbuild": "cd .. && git add . && git commit -m \"build: automatic update after build\" && git push origin main",
+    "postbuild": "node scripts/cleanup.cjs && cd .. && git add . && git commit -m \"build: automatic update after build\" && git push origin main",
     "lint": "eslint .",
     "preview": "vite preview"
   },

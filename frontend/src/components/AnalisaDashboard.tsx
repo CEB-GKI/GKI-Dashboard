@@ -1347,7 +1347,15 @@ const analisa3 = useMemo(() => {
       kehadiran: { curr: kehadiranByYear[currentYear] || 0, prev: kehadiranByYear[prevYear] || 0, trend: getTrend(kehadiranByYear[currentYear] || 0, kehadiranByYear[prevYear] || 0) },
       uang: { curr: uangCurr, prev: uangPrev, trend: getTrend(uangCurr, uangPrev) },
       diri: { curr: diriByYear[currentYear] || 0, prev: diriByYear[prevYear] || 0, trend: getTrend(diriByYear[currentYear] || 0, diriByYear[prevYear] || 0) },
-      mutasi: { curr: mutasiCurr, prev: mutasiPrev, trend: getTrend(mutasiCurr, mutasiPrev) }
+      mutasi: { 
+        curr: mutasiCurr, 
+        prev: mutasiPrev, 
+        trend: {
+          text: diriByYear[prevYear] ? `Setara dengan ${mutasiCurr > 0 ? 'pertumbuhan' : 'penurunan'} ${Math.abs((mutasiCurr / diriByYear[prevYear]) * 100).toFixed(1)}% dari total jemaat tahun sebelumnya` : 'Tidak ada data jemaat tahun sebelumnya',
+          isPositive: mutasiCurr > 0,
+          pct: diriByYear[prevYear] ? (mutasiCurr / diriByYear[prevYear]) * 100 : 0
+        }
+      }
     };
   }, [yearlyData, data]);
 

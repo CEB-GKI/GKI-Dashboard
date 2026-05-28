@@ -73,10 +73,11 @@ export function FullscreenWrapper({ children, className = '', style = {} }: { ch
         width: '100%', 
         minHeight: isFullscreen ? '100vh' : 'auto',
         display: isFullscreen ? 'flex' : 'block',
-        flexDirection: isFullscreen ? 'column' : undefined,
-        justifyContent: isFullscreen ? 'center' : undefined
+        flexDirection: isFullscreen ? 'column' : undefined
       }}>
-        {children}
+        <div style={{ margin: isFullscreen ? 'auto 0' : undefined, width: '100%' }}>
+          {children}
+        </div>
       </div>
     </div>
   );

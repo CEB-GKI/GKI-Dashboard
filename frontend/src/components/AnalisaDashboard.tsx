@@ -115,7 +115,7 @@ function AnalisaCard({ title, icon, description, chart, table, alertText, status
 
 export function AnalisaDashboard({ data, yearlyData }: Props) {
   const [analisa2Filter, setAnalisa2Filter] = useState('All');
-  const [analisa13Time, setAnalisa13Time] = useState<'1m'|'3m'|'1y'|'all'>('1y');
+  const [analisa13Time, setAnalisa13Time] = useState<'1m'|'3m'|'1y'|'all'>('all');
   const [analisa13Compare, setAnalisa13Compare] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
 
@@ -838,7 +838,7 @@ const analisa3 = useMemo(() => {
   }, [data, yearlyData]);
 
   const analisa13 = useMemo(() => {
-    const title = 'Perbandingan Penerimaan Kebaktian dan Luar Kebaktian';
+    const title = 'Perbandingan Penerimaan Rutin dan Non-Rutin';
     const uangData = data['UANG'] || [];
     if (uangData.length === 0) return { sources: ['Data Keuangan (Penerimaan)'], isHidden: true, title };
 
@@ -926,7 +926,7 @@ const analisa3 = useMemo(() => {
           const gap2 = d.Syukur - d.SyukurPrev;
           if (Math.abs(gap1) > Math.abs(highestGapValue)) {
             highestGapValue = gap1;
-            highestGapType = 'Persembahan Kebaktian';
+            highestGapType = 'Persembahan Rutin';
             highestGapDate = formatPeriode(d.name);
             
             // Find biggest contributor
@@ -944,7 +944,7 @@ const analisa3 = useMemo(() => {
           }
           if (Math.abs(gap2) > Math.abs(highestGapValue)) {
             highestGapValue = gap2;
-            highestGapType = 'Persembahan Luar Kebaktian';
+            highestGapType = 'Persembahan Non-Rutin';
             highestGapDate = formatPeriode(d.name);
             
             // Find biggest contributor
@@ -970,7 +970,7 @@ const analisa3 = useMemo(() => {
           
           if (Math.abs(gap1) > Math.abs(highestGapValue)) {
             highestGapValue = gap1;
-            highestGapType = 'Persembahan Kebaktian';
+            highestGapType = 'Persembahan Rutin';
             highestGapDate = `${formatPeriode(prevD.name)} ke ${formatPeriode(d.name)}`;
             
             // Find biggest contributor
@@ -989,7 +989,7 @@ const analisa3 = useMemo(() => {
           }
           if (Math.abs(gap2) > Math.abs(highestGapValue)) {
             highestGapValue = gap2;
-            highestGapType = 'Persembahan Luar Kebaktian';
+            highestGapType = 'Persembahan Non-Rutin';
             highestGapDate = `${formatPeriode(prevD.name)} ke ${formatPeriode(d.name)}`;
             
             // Find biggest contributor
@@ -1018,10 +1018,10 @@ const analisa3 = useMemo(() => {
           <thead>
             <tr>
               <th>Periode</th>
-              <th>Kebaktian (Kini)</th>
+              <th>Rutin (Kini)</th>
               {analisa13Compare && <th>Kebaktian (Lalu)</th>}
-              <th>Luar Kebaktian (Kini)</th>
-              {analisa13Compare && <th>Luar Kebaktian (Lalu)</th>}
+              <th>Non-Rutin (Kini)</th>
+              {analisa13Compare && <th>Non-Rutin (Lalu)</th>}
             </tr>
           </thead>
           <tbody>
@@ -1077,11 +1077,11 @@ const analisa3 = useMemo(() => {
               <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} formatter={(val: any) => `Rp ${Number(val).toLocaleString('id-ID')}`} labelFormatter={formatPeriode} />
               <Legend content={UniversalLegend} wrapperStyle={{ paddingTop: '20px' }} />
               
-              <Line type="monotone" dataKey="Kolekte" name="Persembahan Kebaktian" stroke={COLORS.green} strokeWidth={3} />
+              <Line type="monotone" dataKey="Kolekte" name="Persembahan Rutin" stroke={COLORS.green} strokeWidth={3} />
               {analisa13Compare && <Line type="monotone" dataKey="KolektePrev" name="Kebaktian (Tahun Lalu)" stroke={COLORS.green} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
               
-              <Line type="monotone" dataKey="Syukur" name="Persembahan Luar Kebaktian" stroke={COLORS.purple} strokeWidth={3} />
-              {analisa13Compare && <Line type="monotone" dataKey="SyukurPrev" name="Luar Kebaktian (Tahun Lalu)" stroke={COLORS.purple} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
+              <Line type="monotone" dataKey="Syukur" name="Persembahan Non-Rutin" stroke={COLORS.purple} strokeWidth={3} />
+              {analisa13Compare && <Line type="monotone" dataKey="SyukurPrev" name="Non-Rutin (Tahun Lalu)" stroke={COLORS.purple} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -1150,7 +1150,7 @@ const analisa3 = useMemo(() => {
     });
 
     if (crossoverTexts.length > 0) {
-      dynamicText.push(`Terdapat fenomena langka pada ${crossoverTexts.join(', ')} di mana Persembahan Kebaktian berhasil melampaui Persembahan Luar Kebaktian.`);
+      dynamicText.push(`Terdapat fenomena langka pada ${crossoverTexts.join(', ')} di mana Persembahan Rutin berhasil melampaui Persembahan Non-Rutin.`);
     }
       
     const alertText = isWarning ? `Peringatan: Tren persembahan mengalami penurunan yang signifikan.` : null;

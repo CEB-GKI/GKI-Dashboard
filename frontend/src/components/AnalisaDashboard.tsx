@@ -1,7 +1,9 @@
 import { exportPDF as _exportPDF, exportPPTX as _exportPPTX } from '../utils/exportUtils';
 import { useMemo, useState, useRef } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { AlertTriangle, Info, CheckCircle, TrendingUp, Users, FileText, Download , Maximize2, Minimize2} from 'lucide-react';
+import { FullscreenWrapper }
+from './FullscreenWrapper';
+import { AlertTriangle, Info, CheckCircle, TrendingUp, Users, FileText, Download } from 'lucide-react';
 
 const UniversalLegend = (props: any) => {
   const { payload } = props;
@@ -35,7 +37,7 @@ const COLORS = {
 
 function AnalisaCard({ title, icon, description, chart, table, alertText, status, dynamicText, sources, forceShow }: any) {
   return (
-    <div className="glass-panel analisa-card" style={{ marginBottom: '24px', overflow: 'hidden', border: forceShow ? '1px solid rgba(239, 68, 68, 0.5)' : undefined, boxShadow: forceShow ? '0 0 15px rgba(239, 68, 68, 0.1)' : undefined }}>
+    <FullscreenWrapper className="glass-panel analisa-card" style={{ marginBottom: '24px', overflow: 'hidden', border: forceShow ? '1px solid rgba(239, 68, 68, 0.5)' : undefined, boxShadow: forceShow ? '0 0 15px rgba(239, 68, 68, 0.1)' : undefined }}>
       <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: '12px', background: forceShow ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255,255,255,0.02)' }}>
         {icon}
         <div>
@@ -107,14 +109,13 @@ function AnalisaCard({ title, icon, description, chart, table, alertText, status
           {table}
         </div>
       </div>
-    </div>
+    </FullscreenWrapper>
   );
 }
 
 
 
 export function AnalisaDashboard({ data, yearlyData }: Props) {
-  const [isKehadiranFullscreen, setIsKehadiranFullscreen] = useState(false);
   const [analisa2Filter, setAnalisa2Filter] = useState('All');
   const [analisa13Time, setAnalisa13Time] = useState<'1m'|'3m'|'1y'|'all'>('all');
   const [analisa13Compare, setAnalisa13Compare] = useState(false);
@@ -1490,9 +1491,8 @@ const analisa3 = useMemo(() => {
       )}
 
       {/* 1.7. KEHADIRAN RATA-RATA KHUSUS */}
-      {kehadiranRataData && kehadiranRataData.hasData && (() => {
-        const innerContent = (
-          <>
+      {kehadiranRataData && kehadiranRataData.hasData && (
+        <FullscreenWrapper className="glass-panel" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', borderTop: `4px solid ${COLORS.blue}`, marginBottom: '24px' }}>
             <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.25rem', color: 'var(--text-primary)' }}>
              <TrendingUp color={COLORS.blue} size={24} />
              {kehadiranRataData.title}
@@ -1560,32 +1560,8 @@ const analisa3 = useMemo(() => {
              </div>
            </div>
         
-          </>
-        );
-
-        return (
-          <>
-            {isKehadiranFullscreen && (
-              <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(10px)', overflowY: 'auto', padding: '40px 24px' }}>
-                <div style={{ maxWidth: '1400px', margin: '0 auto', background: 'var(--bg-panel)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', position: 'relative', padding: '32px' }}>
-                   <button onClick={() => setIsKehadiranFullscreen(false)} style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', padding: '8px', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Minimize2 size={20} /> Tutup Layar Penuh
-                   </button>
-                   <div style={{ paddingRight: '120px' }}>
-                     {innerContent}
-                   </div>
-                </div>
-              </div>
-            )}
-            <div className="glass-panel" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', borderTop: `4px solid ${COLORS.blue}`, marginBottom: '24px', position: 'relative' }}>
-               <button className="btn-icon" onClick={() => setIsKehadiranFullscreen(true)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', zIndex: 5 }} title="Layar Penuh">
-                   <Maximize2 size={20} />
-               </button>
-               {innerContent}
-            </div>
-          </>
-        );
-      })()}
+        </FullscreenWrapper>
+      )}
 
       {/* 2. POSITIVE SECTION */}
       {cardsGood.length > 0 && (

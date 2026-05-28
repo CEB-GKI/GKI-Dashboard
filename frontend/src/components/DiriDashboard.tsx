@@ -1,3 +1,4 @@
+import { FullscreenWrapper } from './FullscreenWrapper';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { exportPDF as _exportPDF, exportPPTX as _exportPPTX } from '../utils/exportUtils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -267,7 +268,7 @@ export const DiriDashboard: React.FC<DiriDataProps> = ({ data, churchName }) => 
         </div>
       </div>
 
-      <div className="glass-panel" style={{ padding: '24px' }}>
+      <FullscreenWrapper className="glass-panel" style={{ padding: '24px' }}>
         <h3 style={{ marginTop: 0, marginBottom: '24px' }}>
           Grafik {tableOptions.find(o => o.id === activeTable)?.label.substring(3)} 
           {isComparison ? ' (Perbandingan)' : ` (${selectedYear})`}
@@ -295,7 +296,7 @@ export const DiriDashboard: React.FC<DiriDataProps> = ({ data, churchName }) => 
             </div>
           )}
         </div>
-      </div>
+      </FullscreenWrapper>
 
       <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
         <h3 style={{ marginTop: 0, marginBottom: '24px' }}>Tabel Rincian Data</h3>

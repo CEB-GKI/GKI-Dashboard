@@ -1,3 +1,4 @@
+import { FullscreenWrapper } from './FullscreenWrapper';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { exportPDF as _exportPDF, exportPPTX as _exportPPTX } from '../utils/exportUtils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -223,7 +224,7 @@ export const MutasiDashboard: React.FC<MutasiDataProps> = ({ data, churchName })
 
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           
-          <div className="glass-panel" style={{ flex: '2 1 600px', padding: '24px', display: 'flex', flexDirection: 'column' }}>
+          <FullscreenWrapper className="glass-panel" style={{ flex: '2 1 600px', padding: '24px', display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ margin: '0 0 24px 0', textAlign: 'center', fontSize: '1.2rem' }}>
               Grafik {tableOptions.find(o => o.id === activeTable)?.label.substring(3)}
             </h3>
@@ -352,7 +353,7 @@ export const MutasiDashboard: React.FC<MutasiDataProps> = ({ data, churchName })
                 </div>
               </div>
             )}
-          </div>
+          </FullscreenWrapper>
 
         </div>
       </div>

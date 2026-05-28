@@ -1,3 +1,4 @@
+import { FullscreenWrapper } from './FullscreenWrapper';
 import React, { useRef, useState, useMemo } from 'react';
 import {
   BarChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart
@@ -328,7 +329,8 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
       <div ref={dashboardRef} style={{ background: 'var(--bg-color)', padding: '24px', borderRadius: '16px' }}>
         
         {/* Chart 1 */}
-        <div ref={chart1Ref} className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
+        <FullscreenWrapper className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
+          <div ref={chart1Ref} style={{ width: '100%', height: '100%' }}>
           <h3 style={{ marginBottom: '16px' }}>Perbandingan Penerimaan Antarbulan</h3>
           {renderFilter(c1Time, setC1Time, c1Start, setC1Start, c1Jenis, setC1Jenis, c1CompareYear, setC1CompareYear)}
           <ResponsiveContainer width="100%" height={400}>
@@ -356,9 +358,11 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
             </div>
           )}
         </div>
+        </FullscreenWrapper>
 
         {/* Chart 2 */}
-        <div ref={chart2Ref} className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
+        <FullscreenWrapper className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
+          <div ref={chart2Ref} style={{ width: '100%', height: '100%' }}>
           <h3 style={{ marginBottom: '16px' }}>Perbandingan Penerimaan dengan Kehadiran Jemaat (Rata-rata)</h3>
           {renderFilter(c2Time, setC2Time, c2Start, setC2Start, c2Jenis, setC2Jenis, c2CompareYear, setC2CompareYear)}
           <ResponsiveContainer width="100%" height={400}>
@@ -386,9 +390,11 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
             </div>
           )}
         </div>
+        </FullscreenWrapper>
 
         {/* Chart 3 */}
-        <div ref={chart3Ref} className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
+        <FullscreenWrapper className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
+          <div ref={chart3Ref} style={{ width: '100%', height: '100%' }}>
           <h3 style={{ marginBottom: '16px' }}>Perbandingan Akumulasi Total Selama 1 Tahun</h3>
           {renderFilter(c3Time, setC3Time, c3Start, setC3Start, c3Jenis, setC3Jenis, null, null)}
           <ResponsiveContainer width="100%" height={400}>
@@ -422,6 +428,7 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
             </div>
           )}
         </div>
+        </FullscreenWrapper>
 
       </div>
     </div>

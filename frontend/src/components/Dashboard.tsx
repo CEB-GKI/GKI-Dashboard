@@ -1,3 +1,4 @@
+import { FullscreenWrapper } from './FullscreenWrapper';
 import { exportPDF as _exportPDF, exportPPTX as _exportPPTX } from '../utils/exportUtils';
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import {
@@ -657,7 +658,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
 
             {chartKeys.length > 0 ? (
               <>
-                <div ref={chartRef} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '12px', marginBottom: '24px' }}>
+                <FullscreenWrapper className="glass-panel" style={{ padding: '0', background: 'transparent', marginBottom: '24px' }}>
+                <div ref={chartRef} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '12px', height: '100%' }}>
               
               {jumlahAnggotaRapat !== null && (
                 <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', display: 'inline-block' }}>
@@ -760,7 +762,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                   <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Tidak ada data yang dapat ditampilkan pada grafik.</p>
                 </div>
               )}
-            </div>
+                </div>
+              </FullscreenWrapper>
 
             {chartKeys.length > 0 && (
               <>
@@ -939,6 +942,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                 )}
                 {yearlyChartData.length > 0 ? (
                   <>
+                  <FullscreenWrapper className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
                     <div style={{ width: '100%', height: '400px', marginBottom: '24px' }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={activeYearlyChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -953,6 +957,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+
+                </FullscreenWrapper>
 
                 <div className="table-responsive-wrapper" style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '12px' }}>
                   <h3 style={{ marginBottom: '16px', marginTop: 0 }}>Tabel Resume Tahun Pelayanan</h3>

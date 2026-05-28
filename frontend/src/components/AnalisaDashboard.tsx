@@ -1309,7 +1309,7 @@ const analisa3 = useMemo(() => {
     let mutasiPrev = 0;
 
     if (data['Mutasi'] && data['Mutasi'].hasil) {
-      const pertumbuhanRows = data['Mutasi'].hasil.filter((r: any) => String(r.Kategori).toLowerCase().includes('pertumbuhan'));
+      const pertumbuhanRows = data['Mutasi'].hasil.filter((r: any) => String(r.Kategori).toLowerCase().includes('atats') || String(r.Kategori).toLowerCase().includes('sub-total  (1) - (2)'));
       if (pertumbuhanRows.length > 0) {
         const pRow = pertumbuhanRows[0];
         const years = data['Mutasi'].years;

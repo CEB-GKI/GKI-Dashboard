@@ -605,11 +605,20 @@ export function parseMutasiData(sheetData: any[][]) {
   for (let r = 45; r <= 52; r++) {
     const row = sheetData[r];
     if (row && row[0]) {
+      let val1 = safeIntMutasi(row[1]);
+      let val2 = safeIntMutasi(row[2]);
+      let val3 = safeIntMutasi(row[3]);
+      
+      if (r === 45) { // Row 46 in Excel
+        if (val2 === 0 && safeIntMutasi(sheetData[46]?.[2]) !== 0) val2 = safeIntMutasi(sheetData[46]?.[2]);
+        if (val3 === 0 && safeIntMutasi(sheetData[47]?.[3]) !== 0) val3 = safeIntMutasi(sheetData[47]?.[3]);
+      }
+
       mutasiData.hasil.push({
         "Kategori": String(row[0]),
-        [mutasiData.years[0]]: safeIntMutasi(row[1]),
-        [mutasiData.years[1]]: safeIntMutasi(row[2]),
-        [mutasiData.years[2]]: safeIntMutasi(row[3])
+        [mutasiData.years[0]]: val1,
+        [mutasiData.years[1]]: val2,
+        [mutasiData.years[2]]: val3
       });
     }
   }

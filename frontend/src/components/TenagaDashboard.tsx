@@ -302,7 +302,6 @@ export const TenagaDashboard: React.FC<TenagaDataProps> = ({ data, churchName })
             </div>
           )}
         </div>
-      </FullscreenWrapper>
 
       <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
         <h3 style={{ marginTop: 0, marginBottom: '24px' }}>Tabel Rincian Data</h3>
@@ -343,6 +342,7 @@ export const TenagaDashboard: React.FC<TenagaDataProps> = ({ data, churchName })
            <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>Belum ada kategori yang dipilih.</div>
         )}
       </div>
+      </FullscreenWrapper>
     </div>
   );
 };

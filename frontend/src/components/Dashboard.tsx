@@ -763,7 +763,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                 </div>
               )}
                 </div>
-              </FullscreenWrapper>
 
             {chartKeys.length > 0 && (
               <>
@@ -827,6 +826,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                 )}
               </>
             )}
+              </FullscreenWrapper>
 
             {yearlyData && yearlyData.length > 0 && (
               <div style={{ marginTop: '48px', paddingTop: '24px', borderTop: '1px solid var(--glass-border)' }}>
@@ -958,8 +958,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                   </ResponsiveContainer>
                 </div>
 
-                </FullscreenWrapper>
-
                 <div className="table-responsive-wrapper" style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '12px' }}>
                   <h3 style={{ marginBottom: '16px', marginTop: 0 }}>Tabel Resume Tahun Pelayanan</h3>
                   <div className="table-responsive-wrapper">
@@ -1022,6 +1020,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                     </div>
                   )}
                 </div>
+              </FullscreenWrapper>
               </>
             ) : (
               <div style={{ width: '100%', padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', marginTop: '16px' }}>

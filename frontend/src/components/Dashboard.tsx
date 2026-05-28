@@ -133,8 +133,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
     
     const onsiteKeys = Object.keys(data[0]).filter(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('onsite'));
     const onlineKeys = Object.keys(data[0]).filter(k => k.toLowerCase().includes('online'));
+    const totalKeys = Object.keys(data[0]).filter(k => k.toLowerCase() === 'total kehadiran');
     
-    if (onsiteKeys.length === 0 || onlineKeys.length === 0) return false;
+    const hasExplicitOnline = onlineKeys.length > 0;
+    if (onsiteKeys.length === 0) return false;
 
     let filteredData = data;
     if (sheetName === 'Perayaan') {
@@ -156,12 +158,29 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
     let totalOnline = 0;
     
     filteredData.forEach(row => {
+       let rowOnsite = 0;
        onsiteKeys.forEach(k => {
-           totalOnsite += (parseFloat(row[k]) || 0);
+           // Gunakan key 'Jumlah' jika ada, agar tidak double hitung Pria/Wanita
+           if (k.toLowerCase().includes('jumlah') || onsiteKeys.length === 1) {
+               rowOnsite += (parseFloat(row[k]) || 0);
+           }
        });
-       onlineKeys.forEach(k => {
-           totalOnline += (parseFloat(row[k]) || 0);
-       });
+       totalOnsite += rowOnsite;
+       
+       if (hasExplicitOnline) {
+           onlineKeys.forEach(k => {
+               if (k.toLowerCase().includes('jumlah') || onlineKeys.length === 1) {
+                   totalOnline += (parseFloat(row[k]) || 0);
+               }
+           });
+       } else if (totalKeys.length > 0) {
+           let rowTotal = 0;
+           totalKeys.forEach(k => {
+               rowTotal += (parseFloat(row[k]) || 0);
+           });
+           const implicitOnline = Math.max(0, rowTotal - rowOnsite);
+           totalOnline += implicitOnline;
+       }
     });
 
     return totalOnsite > 0 && totalOnline > 0;

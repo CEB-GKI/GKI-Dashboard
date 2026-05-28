@@ -19,27 +19,28 @@ try {
 
   const readmeStr = fs.readFileSync(readmePath, 'utf-8');
   
-  // Find the Catatan Rilis section
+  // Find the Catatan Rilis section robustly (handling \r\n or \n)
   const sectionHeader = '## 📝 Catatan Rilis & Riwayat Build Terbaru';
   const sectionIndex = readmeStr.indexOf(sectionHeader);
-  const startOfNotesIndex = readmeStr.indexOf('
-', sectionIndex) + 1;
-  let nextNewLine = readmeStr.indexOf('
-', startOfNotesIndex);
-  if (readmeStr[nextNewLine-1] === '') nextNewLine++;
-  const startOfNotesIndex2 = nextNewLine + 1;
   
   if (sectionIndex !== -1) {
     // Find the end of the section (marked by --- or EOF)
-    const endOfSectionIndex = readmeStr.indexOf('
----', sectionIndex + sectionHeader.length);
+    // First, find where our header line ends
+    const nextLineBreak = readmeStr.indexOf('\n', sectionIndex);
+    const startOfNotesIndex = nextLineBreak !== -1 ? nextLineBreak + 1 : sectionIndex + sectionHeader.length;
+    
+    // Sometimes there's an extra blank line
+    let actualNotesStart = startOfNotesIndex;
+    if (readmeStr[actualNotesStart] === '\n') actualNotesStart++;
+    if (readmeStr[actualNotesStart] === '\r' && readmeStr[actualNotesStart+1] === '\n') actualNotesStart += 2;
+    
+    const endOfSectionIndex = readmeStr.indexOf('\n---', startOfNotesIndex);
     
     let newReadme = '';
     if (endOfSectionIndex !== -1) {
-      newReadme = readmeStr.substring(0, startOfNotesIndex2) + markdownNotes + '
-' + readmeStr.substring(endOfSectionIndex);
+      newReadme = readmeStr.substring(0, actualNotesStart) + markdownNotes + readmeStr.substring(endOfSectionIndex);
     } else {
-      newReadme = readmeStr.substring(0, startOfNotesIndex2) + markdownNotes;
+      newReadme = readmeStr.substring(0, actualNotesStart) + markdownNotes;
     }
     
     fs.writeFileSync(readmePath, newReadme);

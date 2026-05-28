@@ -1239,6 +1239,97 @@ const analisa3 = useMemo(() => {
   
   const churchName = data['church_name'] ? `GKI ${data['church_name']}` : "Gereja (Belum dinamai)";
 
+  const yoyData = useMemo(() => {
+    // 1. Total Kehadiran Seluruh Kebaktian (Minggu, Kategorial, Persekutuan, Perayaan)
+    const allKebaktianSheets = ['Keb. Minggu', 'Keb. Kategorial', 'Pers. Kategorial', 'Pers. Lainnya', 'Perayaan'];
+    const kehadiranByYear: Record<number, number> = {};
+    
+    allKebaktianSheets.forEach(sheetName => {
+      if (yearlyData[sheetName]) {
+        yearlyData[sheetName].forEach((row: any) => {
+          const year = parseInt(row.Tanggal);
+          if (year && !isNaN(year)) {
+            kehadiranByYear[year] = (kehadiranByYear[year] || 0) + (row['Total Kehadiran'] || 0);
+          }
+        });
+      }
+    });
+
+    // 2. Total Penerimaan (UANG)
+    const uangByYear: Record<number, number> = {};
+    if (yearlyData['UANG']) {
+      yearlyData['UANG'].forEach((row: any) => {
+        const year = parseInt(row.Tahun);
+        if (year && !isNaN(year)) {
+          let total = 0;
+          Object.keys(row).forEach(k => {
+            if (k !== 'Tahun' && k !== 'Bulan' && k !== 'Total Bulanan') {
+              total += (row[k] || 0);
+            }
+          });
+          uangByYear[year] = (uangByYear[year] || 0) + total;
+        }
+      });
+    }
+
+    // 3. Total Jemaat (DIRI - Massa)
+    const diriByYear: Record<number, number> = {};
+    if (data['DIRI'] && data['DIRI'].massa) {
+      data['DIRI'].massa.forEach((row: any) => {
+        const year = parseInt(row.Tahun);
+        if (year && !isNaN(year)) {
+          diriByYear[year] = row['Total'] || 0;
+        }
+      });
+    }
+
+    // 4. Mutasi Bersih
+    const mutasiByYear: Record<number, number> = {};
+    if (data['Mutasi'] && data['Mutasi'].rekapitulasi) {
+      data['Mutasi'].rekapitulasi.forEach((row: any) => {
+        const yearMatch = String(row['Tahun']).match(/\d{4}/);
+        if (yearMatch) {
+          const year = parseInt(yearMatch[0]);
+          mutasiByYear[year] = (row['Total Penambahan'] || 0) - (row['Total Pengurangan'] || 0);
+        }
+      });
+    }
+
+    // Get the latest two years from all datasets
+    const allYears = Array.from(new Set([
+      ...Object.keys(kehadiranByYear),
+      ...Object.keys(uangByYear),
+      ...Object.keys(diriByYear),
+      ...Object.keys(mutasiByYear)
+    ])).map(Number).sort((a, b) => b - a);
+
+    if (allYears.length < 2) return null;
+
+    const currentYear = allYears[0];
+    const prevYear = allYears[1];
+
+    const getTrend = (curr: number, prev: number) => {
+      if (!prev) return { text: 'Tidak ada data tahun sebelumnya', isPositive: null, pct: 0 };
+      const diff = curr - prev;
+      const pct = (diff / prev) * 100;
+      return {
+        text: `${diff > 0 ? 'Naik' : 'Turun'} ${Math.abs(pct).toFixed(1)}% dibandingkan tahun ${prevYear}`,
+        isPositive: diff > 0,
+        pct
+      };
+    };
+
+    return {
+      currentYear,
+      prevYear,
+      kehadiran: { curr: kehadiranByYear[currentYear] || 0, prev: kehadiranByYear[prevYear] || 0, trend: getTrend(kehadiranByYear[currentYear] || 0, kehadiranByYear[prevYear] || 0) },
+      uang: { curr: uangByYear[currentYear] || 0, prev: uangByYear[prevYear] || 0, trend: getTrend(uangByYear[currentYear] || 0, uangByYear[prevYear] || 0) },
+      diri: { curr: diriByYear[currentYear] || 0, prev: diriByYear[prevYear] || 0, trend: getTrend(diriByYear[currentYear] || 0, diriByYear[prevYear] || 0) },
+      mutasi: { curr: mutasiByYear[currentYear] || 0, prev: mutasiByYear[prevYear] || 0, trend: getTrend(mutasiByYear[currentYear] || 0, mutasiByYear[prevYear] || 0) }
+    };
+  }, [yearlyData, data]);
+
+
   if (!data || Object.keys(data).length === 0) {
     return <div className="glass-panel" style={{ padding: '24px', textAlign: 'center' }}>Silakan muat file Excel terlebih dahulu untuk melihat analisa.</div>;
   }
@@ -1272,6 +1363,64 @@ const analisa3 = useMemo(() => {
         <div className="glass-panel" style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
           <Info size={48} style={{ margin: '0 auto 16px auto', opacity: 0.5 }} />
           <p style={{ margin: 0 }}>Belum ada modul analisa yang dapat dimuat.</p>
+        </div>
+      )}
+
+      
+      {/* 1.5. YOY SUMMARY SECTION */}
+      {yoyData && (
+        <div className="glass-panel" style={{ padding: '24px', borderLeft: `4px solid ${COLORS.blue}` }}>
+          <h3 style={{ margin: '0 0 16px 0', color: 'var(--text-primary)', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <TrendingUp size={24} color={COLORS.blue} />
+            Ringkasan Pertumbuhan Tahunan ({yoyData.prevYear} - {yoyData.currentYear})
+          </h3>
+          <p style={{ margin: '0 0 20px 0', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+            Sebagai gambaran besar (tanpa filter spesifik), berikut adalah rangkuman performa data Kebaktian (akumulasi seluruh ibadah, persekutuan, perayaan) dan data Administrasi (keuangan, keanggotaan) dibandingkan dengan tahun sebelumnya:
+          </p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            
+            {/* Total Jemaat */}
+            <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Total Anggota Warga (DIRI)</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 600, margin: '4px 0', color: 'var(--text-primary)' }}>{yoyData.diri.curr.toLocaleString('id-ID')}</div>
+              <div style={{ fontSize: '0.85rem', color: yoyData.diri.trend.isPositive === true ? COLORS.green : yoyData.diri.trend.isPositive === false ? COLORS.red : 'var(--text-secondary)' }}>
+                {yoyData.diri.trend.isPositive === true ? '▲ ' : yoyData.diri.trend.isPositive === false ? '▼ ' : ''}
+                {yoyData.diri.trend.text}
+              </div>
+            </div>
+
+            {/* Total Kehadiran */}
+            <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Akumulasi Kehadiran Seluruh Kebaktian</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 600, margin: '4px 0', color: 'var(--text-primary)' }}>{yoyData.kehadiran.curr.toLocaleString('id-ID')}</div>
+              <div style={{ fontSize: '0.85rem', color: yoyData.kehadiran.trend.isPositive === true ? COLORS.green : yoyData.kehadiran.trend.isPositive === false ? COLORS.red : 'var(--text-secondary)' }}>
+                {yoyData.kehadiran.trend.isPositive === true ? '▲ ' : yoyData.kehadiran.trend.isPositive === false ? '▼ ' : ''}
+                {yoyData.kehadiran.trend.text}
+              </div>
+            </div>
+
+            {/* Total Penerimaan */}
+            <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Total Penerimaan Keuangan (UANG)</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 600, margin: '4px 0', color: 'var(--text-primary)' }}>Rp {(yoyData.uang.curr / 1000000).toFixed(1)}Jt</div>
+              <div style={{ fontSize: '0.85rem', color: yoyData.uang.trend.isPositive === true ? COLORS.green : yoyData.uang.trend.isPositive === false ? COLORS.red : 'var(--text-secondary)' }}>
+                {yoyData.uang.trend.isPositive === true ? '▲ ' : yoyData.uang.trend.isPositive === false ? '▼ ' : ''}
+                {yoyData.uang.trend.text}
+              </div>
+            </div>
+
+            {/* Mutasi Bersih */}
+            <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Pertumbuhan Jemaat Bersih (Mutasi)</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 600, margin: '4px 0', color: 'var(--text-primary)' }}>{yoyData.mutasi.curr > 0 ? '+' : ''}{yoyData.mutasi.curr.toLocaleString('id-ID')} jiwa</div>
+              <div style={{ fontSize: '0.85rem', color: yoyData.mutasi.trend.isPositive === true ? COLORS.green : yoyData.mutasi.trend.isPositive === false ? COLORS.red : 'var(--text-secondary)' }}>
+                {yoyData.mutasi.trend.isPositive === true ? '▲ ' : yoyData.mutasi.trend.isPositive === false ? '▼ ' : ''}
+                {yoyData.mutasi.trend.text}
+              </div>
+            </div>
+
+          </div>
         </div>
       )}
 

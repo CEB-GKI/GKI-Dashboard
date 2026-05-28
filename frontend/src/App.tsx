@@ -387,7 +387,6 @@ function App() {
               <Activity color="white" size={20} />
             </div>
             <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-              <span style={{ color: 'var(--accent)', marginRight: '6px' }}>v3.1</span>
               LKKJ VISUALIZATION{data.church_name ? ` • GKI ${data.church_name}` : ''}
             </h2>
           </div>

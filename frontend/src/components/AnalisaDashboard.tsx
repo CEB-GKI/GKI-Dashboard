@@ -1021,7 +1021,7 @@ const analisa3 = useMemo(() => {
             <tr>
               <th>Periode</th>
               <th>Rutin (Kini)</th>
-              {analisa13Compare && <th>Kebaktian (Lalu)</th>}
+              {analisa13Compare && <th>Rutin (Lalu)</th>}
               <th>Non-Rutin (Kini)</th>
               {analisa13Compare && <th>Non-Rutin (Lalu)</th>}
             </tr>
@@ -1080,7 +1080,7 @@ const analisa3 = useMemo(() => {
               <Legend content={UniversalLegend} wrapperStyle={{ paddingTop: '20px' }} />
               
               <Line type="monotone" dataKey="Kolekte" name="Persembahan Rutin" stroke={COLORS.green} strokeWidth={3} />
-              {analisa13Compare && <Line type="monotone" dataKey="KolektePrev" name="Kebaktian (Tahun Lalu)" stroke={COLORS.green} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
+              {analisa13Compare && <Line type="monotone" dataKey="KolektePrev" name="Persembahan Rutin (Tahun Lalu)" stroke={COLORS.green} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}
               
               <Line type="monotone" dataKey="Syukur" name="Persembahan Non-Rutin" stroke={COLORS.purple} strokeWidth={3} />
               {analisa13Compare && <Line type="monotone" dataKey="SyukurPrev" name="Non-Rutin (Tahun Lalu)" stroke={COLORS.purple} strokeWidth={2} strokeDasharray="5 5" opacity={0.6} />}

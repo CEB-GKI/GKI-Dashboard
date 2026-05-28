@@ -549,8 +549,18 @@ export function parseMutasiData(sheetData: any[][]) {
 
   const safeIntMutasi = (val: any) => {
     try {
-      const num = parseInt(String(val).replace(/,/g, ''), 10);
-      return isNaN(num) ? 0 : num;
+      let strVal = String(val).replace(/,/g, '').trim();
+      let isNegative = false;
+      if (strVal.startsWith('(') && strVal.endsWith(')')) {
+        isNegative = true;
+        strVal = strVal.slice(1, -1);
+      } else if (strVal.startsWith('-')) {
+        isNegative = true;
+        strVal = strVal.slice(1);
+      }
+      const num = parseInt(strVal, 10);
+      if (isNaN(num)) return 0;
+      return isNegative ? -num : num;
     } catch {
       return 0;
     }

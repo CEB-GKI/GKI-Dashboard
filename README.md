@@ -124,23 +124,15 @@ GKI-Dashboard/
 
 ---
 
-## ⚡ Cara Instalasi & Menjalankan Aplikasi
+## ⚡ Cara Penggunaan Aplikasi (Tanpa Instalasi)
 
-Aplikasi ini dilengkapi dengan skrip inisialisasi otomatis menggunakan berkas `start.bat` untuk mempermudah operasional di Windows.
+Aplikasi ini telah dikompilasi secara canggih menjadi satu buah berkas HTML mandiri (*single-file HTML*) yang sangat ringan dan portabel. **Anda tidak perlu repot-repot menginstal Python, Node.js, atau server tambahan apa pun.**
 
-### Prasyarat
-1. Pastikan **Anaconda/Miniconda** sudah terpasang dan berada dalam sistem `PATH` Anda.
-2. Pastikan **Node.js** (versi 16+) sudah terpasang untuk menjalankan dan membangun aset frontend.
-
-### Langkah-langkah
-1. Unduh atau klon repositori ini ke komputer Anda.
-2. Klik ganda (double-click) pada file **`start.bat`** di direktori utama proyek.
-3. Skrip otomatis akan:
-   - Membuat lingkungan Conda bernama `gki_waha_env` jika belum terdeteksi.
-   - Memasang seluruh dependensi Python yang dibutuhkan.
-   - Memasang modul Node.js dan mem-build aset frontend React.
-   - Menjalankan server FastAPI backend.
-   - Membuka peramban (browser) Anda secara otomatis menuju alamat: **`http://localhost:8000`**
+### Langkah-langkah Penggunaan:
+1. Unduh (Download) repositori ini ke komputer Anda.
+2. Buka folder utama, lalu cari berkas bernama **`GKI_Dashboard.html`**.
+3. Klik ganda (*double-click*) berkas tersebut. Aplikasi akan otomatis terbuka di peramban web (*browser*) bawaan Anda seperti Google Chrome, Safari, atau Edge tanpa membutuhkan koneksi server.
+4. Selesai! Anda dapat langsung menempelkan tautan (Link) Google Sheets LKKJ Anda di dalam aplikasi untuk mulai menganalisis.
 
 ---
 

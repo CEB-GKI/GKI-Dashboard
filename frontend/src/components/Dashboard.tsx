@@ -87,9 +87,44 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
     return { activeMetrics: active, emptyMetrics: empty };
   }, [allKebMingguMetrics, data]);
 
-  const hasHybridMetricsAvailable = useMemo(() => {
-    return allKebMingguMetrics.some(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('online') || k.toLowerCase().includes('onsite'));
-  }, [allKebMingguMetrics]);
+  const isHybridView = useMemo(() => {
+    if (!data || data.length === 0) return false;
+    
+    const onsiteKeys = Object.keys(data[0]).filter(k => k.toLowerCase().includes('on-site') || k.toLowerCase().includes('onsite'));
+    const onlineKeys = Object.keys(data[0]).filter(k => k.toLowerCase().includes('online'));
+    
+    if (onsiteKeys.length === 0 || onlineKeys.length === 0) return false;
+
+    let filteredData = data;
+    if (sheetName === 'Perayaan') {
+       const selectedEvents = [perayaanFilter, perayaanCompare1, perayaanCompare2, perayaanCompare3].filter(x => x && x !== 'Semua Perayaan');
+       if (perayaanFilter !== 'Semua Perayaan') {
+           filteredData = data.filter(row => selectedEvents.includes(row['Jam']));
+       }
+    } else if (sheetName === 'Keb. Kategorial' || sheetName === 'Pers. Kategorial' || sheetName === 'Pers. Lainnya') {
+       if (kategorialFilter !== 'Semua Kategorial') {
+           filteredData = data.filter(row => row['Jam'] === kategorialFilter);
+       }
+    } else if (sheetName === 'RAPAT') {
+       if (rapatFilter !== 'Semua Rapat') {
+           filteredData = data.filter(row => row['Jam'] === rapatFilter);
+       }
+    }
+    
+    let totalOnsite = 0;
+    let totalOnline = 0;
+    
+    filteredData.forEach(row => {
+       onsiteKeys.forEach(k => {
+           totalOnsite += (parseFloat(row[k]) || 0);
+       });
+       onlineKeys.forEach(k => {
+           totalOnline += (parseFloat(row[k]) || 0);
+       });
+    });
+
+    return totalOnsite > 0 && totalOnline > 0;
+  }, [data, sheetName, perayaanFilter, perayaanCompare1, perayaanCompare2, perayaanCompare3, kategorialFilter, rapatFilter]);
 
   const availablePeriods = useMemo(() => {
     if (!isSupportedChartSheet || !data) return [];
@@ -752,7 +787,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                     </table>
                   </div>
 
-                  {hasHybridMetricsAvailable && (
+                  {isHybridView && (
                     <div style={{ marginTop: '16px', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', opacity: 0.8 }}>
                       * Catatan: Struktur LKKJ v.3.1 SW Jabar belum mengakomodasi bentuk hybrid, jadi ada kemungkinan kesalahan pengolahan data pada pembagian jumlah On-Site & Online.
                     </div>
@@ -942,7 +977,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
                     </table>
                   </div>
 
-                  {hasHybridMetricsAvailable && (
+                  {isHybridView && (
                     <div style={{ marginTop: '16px', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', opacity: 0.8 }}>
                       * Catatan: Struktur LKKJ v.3.1 SW Jabar belum mengakomodasi bentuk hybrid, jadi ada kemungkinan kesalahan pengolahan data pada pembagian jumlah On-Site & Online.
                     </div>

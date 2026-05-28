@@ -20,18 +20,26 @@ try {
   const readmeStr = fs.readFileSync(readmePath, 'utf-8');
   
   // Find the Catatan Rilis section
-  const sectionHeader = '## 📝 Catatan Rilis & Riwayat Build Terbaru\n\n';
+  const sectionHeader = '## 📝 Catatan Rilis & Riwayat Build Terbaru';
   const sectionIndex = readmeStr.indexOf(sectionHeader);
+  const startOfNotesIndex = readmeStr.indexOf('
+', sectionIndex) + 1;
+  let nextNewLine = readmeStr.indexOf('
+', startOfNotesIndex);
+  if (readmeStr[nextNewLine-1] === '') nextNewLine++;
+  const startOfNotesIndex2 = nextNewLine + 1;
   
   if (sectionIndex !== -1) {
     // Find the end of the section (marked by --- or EOF)
-    const endOfSectionIndex = readmeStr.indexOf('\n---\n', sectionIndex + sectionHeader.length);
+    const endOfSectionIndex = readmeStr.indexOf('
+---', sectionIndex + sectionHeader.length);
     
     let newReadme = '';
     if (endOfSectionIndex !== -1) {
-      newReadme = readmeStr.substring(0, sectionIndex + sectionHeader.length) + markdownNotes + readmeStr.substring(endOfSectionIndex);
+      newReadme = readmeStr.substring(0, startOfNotesIndex2) + markdownNotes + '
+' + readmeStr.substring(endOfSectionIndex);
     } else {
-      newReadme = readmeStr.substring(0, sectionIndex + sectionHeader.length) + markdownNotes;
+      newReadme = readmeStr.substring(0, startOfNotesIndex2) + markdownNotes;
     }
     
     fs.writeFileSync(readmePath, newReadme);

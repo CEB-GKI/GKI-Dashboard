@@ -1291,10 +1291,10 @@ const analisa3 = useMemo(() => {
       }
     }
 
-    // 3. Total Jemaat (DIRI - Massa)
+    // 3. Total Jemaat (DIRI - Usia & Gender Table gives Column AD Total)
     const diriByYear: Record<number, number> = {};
-    if (data['DIRI'] && data['DIRI'].massa) {
-      data['DIRI'].massa.forEach((row: any) => {
+    if (data['DIRI'] && data['DIRI'].usia_gender) {
+      data['DIRI'].usia_gender.forEach((row: any) => {
         const yearMatch = String(row.Tahun).match(/20\d{2}/);
         if (yearMatch) {
           const year = parseInt(yearMatch[0]);

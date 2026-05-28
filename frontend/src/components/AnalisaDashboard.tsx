@@ -114,7 +114,6 @@ function AnalisaCard({ title, icon, description, chart, table, alertText, status
 
 
 export function AnalisaDashboard({ data, yearlyData }: Props) {
-  const [showHidden, setShowHidden] = useState(false);
   const [analisa2Filter, setAnalisa2Filter] = useState('All');
   const [analisa13Time, setAnalisa13Time] = useState<'1m'|'3m'|'1y'|'all'>('1y');
   const [analisa13Compare, setAnalisa13Compare] = useState(false);
@@ -1230,20 +1229,13 @@ const analisa3 = useMemo(() => {
 
   const allModules = [analisa2, analisa3, analisa4, analisa7, analisa8, analisa10, analisa12, analisa13, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
   
-  const activeCards = allModules
-    .filter((c: any) => c && (!c.isHidden || showHidden))
-    .sort((a: any, b: any) => {
-      const aHidden = a.isHidden ? 1 : 0;
-      const bHidden = b.isHidden ? 1 : 0;
-      return aHidden - bHidden;
-    });
+  const cardsGood = allModules.filter(m => !m.isHidden && m.status === 'good');
+  const cardsWarning = allModules.filter(m => !m.isHidden && m.status === 'warning');
+  const cardsHidden = allModules.filter(m => m.isHidden);
 
-  const missingSources = Array.from(new Set(
-    allModules.filter(m => m.isHidden).flatMap(m => m.sources || [])
-  ));
-  
-  const warnings = allModules.filter(m => !m.isHidden && m.status === 'warning').map(m => m.title);
-  const goods = allModules.filter(m => !m.isHidden && m.status === 'good').map(m => m.title);
+  const missingSources = Array.from(new Set(cardsHidden.flatMap(m => m.sources || [])));
+  const warnings = cardsWarning.map(m => m.title);
+  const goods = cardsGood.map(m => m.title);
   
   const churchName = data['church_name'] ? `GKI ${data['church_name']}` : "Gereja (Belum dinamai)";
 
@@ -1252,95 +1244,109 @@ const analisa3 = useMemo(() => {
   }
 
   return (
-    <div ref={dashboardRef} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', borderLeft: `4px solid ${COLORS.blue}` }}>
-        <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <TrendingUp color={COLORS.blue} />
-          Executive Summary & Insights
-        </h2>
-        <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-          Dashboard ini menggunakan algoritma analisa data untuk secara otomatis mendeteksi tren, anomali, peringatan dini (early warning), dan peluang pertumbuhan dari seluruh data gereja yang telah diinput.
-        </p>
-        
-        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
-              <input 
-                type="checkbox" 
-                checked={showHidden} 
-                onChange={(e) => setShowHidden(e.target.checked)} 
-                style={{ cursor: 'pointer' }}
-              />
-              <span style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}>Tunjukkan seluruh Analisa lainnya yang di-hidden (karena data tidak mencukupi)</span>
-            </label>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="btn" onClick={exportPDF} style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Download size={16} /> Export PDF
-              </button>
-              <button className="btn" onClick={exportPPTX} style={{ background: '#d97706', padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Download size={16} /> Export PPTX
-              </button>
-            </div>
+    <div ref={dashboardRef} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      
+      {/* 1. INTRO / EXECUTIVE SUMMARY HEADER */}
+      <div className="glass-panel" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px', borderTop: `4px solid ${COLORS.purple}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.5rem' }}>
+            <FileText color={COLORS.purple} size={28} />
+            Kesimpulan Eksekutif (Executive Summary)
+          </h2>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn" onClick={exportPDF} style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Download size={16} /> Export PDF
+            </button>
+            <button className="btn" onClick={exportPPTX} style={{ background: '#d97706', padding: '8px 16px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Download size={16} /> Export PPTX
+            </button>
           </div>
+        </div>
+        
+        <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1.05rem' }}>
+          Berdasarkan seluruh agregasi data kehadiran dalam berbagai jenis Kebaktian serta data Administrasi (seperti laporan keuangan, mutasi jemaat, dan statistik tenaga pelayanan) yang telah diunggah oleh <strong>{churchName}</strong>, sistem algoritma telah menganalisis profil dan tren gereja secara menyeluruh. Berikut adalah presentasi hasil analisa tersebut:
+        </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))', gap: '24px' }}>
-        {activeCards.map((card: any, idx: number) => (
-          <AnalisaCard key={idx} {...card} forceShow={showHidden && card.isHidden} />
-        ))}
-      </div>
-      
-      {activeCards.length === 0 && (
+      {allModules.length === 0 && (
         <div className="glass-panel" style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
           <Info size={48} style={{ margin: '0 auto 16px auto', opacity: 0.5 }} />
-          <p style={{ margin: 0 }}>Belum ada data yang cukup untuk menampilkan satupun analisa.</p>
-          <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>Centang "Tunjukkan seluruh Analisa" di atas untuk melihat modul yang membutuhkan tambahan data.</p>
+          <p style={{ margin: 0 }}>Belum ada modul analisa yang dapat dimuat.</p>
         </div>
       )}
 
-      {activeCards.length > 0 && (
-        <div className="glass-panel" style={{ padding: '32px', marginTop: '16px', borderTop: `4px solid ${COLORS.purple}` }}>
-          <h2 style={{ margin: '0 0 16px 0', fontSize: '1.4rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <FileText color={COLORS.purple} />
-            Kesimpulan Eksekutif (Ringkasan Teks)
-          </h2>
-          <div style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1.05rem', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <p style={{ margin: 0 }}>
-              Berdasarkan seluruh agregasi data kehadiran dalam berbagai jenis Kebaktian serta data Administrasi (seperti laporan keuangan, mutasi jemaat, dan statistik tenaga pelayanan) yang telah diunggah oleh <strong>{churchName}</strong>, sistem telah menghasilkan rangkuman profil dan tren yang tergambar secara komprehensif dari hasil analisa tabel di atas.
+      {/* 2. POSITIVE SECTION */}
+      {cardsGood.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="glass-panel" style={{ padding: '24px', background: 'rgba(16, 185, 129, 0.03)', borderLeft: `4px solid ${COLORS.green}` }}>
+            <h3 style={{ margin: '0 0 12px 0', color: COLORS.green, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle size={24} />
+              Indikator Positif & Aspek Sehat
+            </h3>
+            <p style={{ margin: '0 0 12px 0', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+              Gereja menunjukkan tren pertumbuhan dan pengelolaan yang sangat baik pada area-area berikut:
             </p>
-            
-            {goods.length > 0 && (
-              <div style={{ padding: '16px', background: 'rgba(16, 185, 129, 0.05)', borderRadius: '8px', borderLeft: `4px solid ${COLORS.green}` }}>
-                <strong style={{ color: COLORS.green }}>Indikator Positif / Aspek Sehat:</strong>
-                <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
-                  {goods.map((g, i) => <li key={i}>{g}</li>)}
-                </ul>
-              </div>
-            )}
-
-            {warnings.length > 0 && (
-              <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '8px', borderLeft: `4px solid ${COLORS.red}` }}>
-                <strong style={{ color: COLORS.red }}>⚠️ Hal-hal Kritis yang Perlu Diperhatikan Majelis Jemaat:</strong>
-                <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
-                  {warnings.map((w, i) => <li key={i}>{w}</li>)}
-                </ul>
-                <p style={{ margin: '12px 0 0 0', fontSize: '0.95rem' }}>
-                  <em>Mohon merujuk kembali pada detail grafik peringatan (kotak berwarna merah/kuning) di atas untuk melihat deskripsi lengkap beserta saran intervensi (rekomendasi) yang perlu segera ditindaklanjuti.</em>
-                </p>
-              </div>
-            )}
-
-            {missingSources.length > 0 && (
-              <div style={{ padding: '16px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '8px', borderLeft: `4px solid ${COLORS.blue}` }}>
-                <strong style={{ color: COLORS.blue }}>Rekomendasi Kelengkapan Data:</strong>
-                <p style={{ margin: '8px 0 0 0' }}>
-                  Agar analisa prediktif dapat berjalan lebih dalam dan algoritma lainnya dapat terbuka, mohon lengkapi pengisian data (*sheet*) berikut yang masih berstatus kosong di LKKJ Anda: 
-                  <strong> {missingSources.join(', ')}</strong>.
-                </p>
-              </div>
-            )}
+            <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-primary)', lineHeight: '1.6' }}>
+              {goods.map((g, i) => <li key={i}><strong>{g}</strong></li>)}
+            </ul>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))', gap: '24px' }}>
+            {cardsGood.map((card: any, idx: number) => (
+              <AnalisaCard key={idx} {...card} forceShow={false} />
+            ))}
           </div>
         </div>
       )}
+
+      {/* 3. WARNING / CRITICAL SECTION */}
+      {cardsWarning.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="glass-panel" style={{ padding: '24px', background: 'rgba(239, 68, 68, 0.03)', borderLeft: `4px solid ${COLORS.red}` }}>
+            <h3 style={{ margin: '0 0 12px 0', color: COLORS.red, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertTriangle size={24} />
+              Hal-hal Kritis & Peringatan Dini
+            </h3>
+            <p style={{ margin: '0 0 12px 0', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+              Sistem mendeteksi adanya anomali atau tren negatif yang memerlukan intervensi segera dari Majelis Jemaat pada area berikut:
+            </p>
+            <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-primary)', lineHeight: '1.6' }}>
+              {warnings.map((w, i) => <li key={i}><strong>{w}</strong></li>)}
+            </ul>
+            <p style={{ margin: '12px 0 0 0', fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+              <em>Silakan periksa detail grafik dan rekomendasi tindakan pada masing-masing modul di bawah ini.</em>
+            </p>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))', gap: '24px' }}>
+            {cardsWarning.map((card: any, idx: number) => (
+              <AnalisaCard key={idx} {...card} forceShow={false} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. MISSING DATA SECTION */}
+      {cardsHidden.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="glass-panel" style={{ padding: '24px', background: 'rgba(59, 130, 246, 0.03)', borderLeft: `4px solid ${COLORS.blue}` }}>
+            <h3 style={{ margin: '0 0 12px 0', color: COLORS.blue, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Info size={24} />
+              Rekomendasi Kelengkapan Data
+            </h3>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+              Untuk membuka algoritma analisa yang lebih tajam (modul-modul di bawah ini), sistem mendeteksi bahwa Anda belum mengisi data pada *sheet* <strong>{missingSources.join(', ')}</strong> di dalam file LKKJ Anda. Mohon lengkapi data tersebut di masa mendatang.
+            </p>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))', gap: '24px', opacity: 0.8 }}>
+            {cardsHidden.map((card: any, idx: number) => (
+              <AnalisaCard key={idx} {...card} forceShow={true} />
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

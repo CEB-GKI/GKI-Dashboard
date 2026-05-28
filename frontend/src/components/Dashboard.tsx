@@ -659,7 +659,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], she
             {chartKeys.length > 0 ? (
               <>
                 <FullscreenWrapper className="glass-panel" style={{ padding: '0', background: 'transparent', marginBottom: '24px' }}>
-                <div ref={chartRef} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '12px', height: '100%' }}>
+                <div ref={chartRef} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '12px', height: 'auto' }}>
               
               {jumlahAnggotaRapat !== null && (
                 <div style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', display: 'inline-block' }}>

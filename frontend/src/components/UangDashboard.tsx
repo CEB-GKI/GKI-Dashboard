@@ -330,7 +330,7 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
         
         {/* Chart 1 */}
         <FullscreenWrapper className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
-          <div ref={chart1Ref} style={{ width: '100%', height: '100%' }}>
+          <div ref={chart1Ref} style={{ width: '100%', height: 'auto' }}>
           <h3 style={{ marginBottom: '16px' }}>Perbandingan Penerimaan Antarbulan</h3>
           {renderFilter(c1Time, setC1Time, c1Start, setC1Start, c1Jenis, setC1Jenis, c1CompareYear, setC1CompareYear)}
           <ResponsiveContainer width="100%" height={400}>
@@ -362,7 +362,7 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
 
         {/* Chart 2 */}
         <FullscreenWrapper className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
-          <div ref={chart2Ref} style={{ width: '100%', height: '100%' }}>
+          <div ref={chart2Ref} style={{ width: '100%', height: 'auto' }}>
           <h3 style={{ marginBottom: '16px' }}>Perbandingan Penerimaan dengan Kehadiran Jemaat (Rata-rata)</h3>
           {renderFilter(c2Time, setC2Time, c2Start, setC2Start, c2Jenis, setC2Jenis, c2CompareYear, setC2CompareYear)}
           <ResponsiveContainer width="100%" height={400}>
@@ -394,7 +394,7 @@ export const UangDashboard: React.FC<Props> = ({ data, churchName }) => {
 
         {/* Chart 3 */}
         <FullscreenWrapper className="glass-panel chart-container" style={{ marginBottom: '32px' }}>
-          <div ref={chart3Ref} style={{ width: '100%', height: '100%' }}>
+          <div ref={chart3Ref} style={{ width: '100%', height: 'auto' }}>
           <h3 style={{ marginBottom: '16px' }}>Perbandingan Akumulasi Total Selama 1 Tahun</h3>
           {renderFilter(c3Time, setC3Time, c3Start, setC3Start, c3Jenis, setC3Jenis, null, null)}
           <ResponsiveContainer width="100%" height={400}>

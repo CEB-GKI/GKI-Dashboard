@@ -1510,7 +1510,7 @@ const analisa3 = useMemo(() => {
              </div>
            </div>
 
-           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px', alignItems: 'start' }}>
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', alignItems: 'stretch' }}>
              {/* Chart Side */}
              <div style={{ width: '100%', minWidth: 0 }}>
                <ResponsiveContainer width="100%" height={450}>

@@ -1227,15 +1227,6 @@ const analisa3 = useMemo(() => {
     'Peringatan Krisis Regenerasi Pemimpin'
   ];
 
-  const allModules = [analisa2, analisa3, analisa4, analisa7, analisa8, analisa10, analisa12, analisa13, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
-  
-  const cardsGood = allModules.filter(m => !m.isHidden && m.status === 'good');
-  const cardsWarning = allModules.filter(m => !m.isHidden && m.status === 'warning');
-  const cardsHidden = allModules.filter(m => m.isHidden);
-
-  const missingSources = Array.from(new Set(cardsHidden.flatMap(m => m.sources || [])));
-  const warnings = cardsWarning.map(m => m.title);
-
   
   const churchName = data['church_name'] ? `GKI ${data['church_name']}` : "Gereja (Belum dinamai)";
 
@@ -1359,6 +1350,79 @@ const analisa3 = useMemo(() => {
     };
   }, [yearlyData, data]);
 
+  const analisaKehadiran = useMemo(() => {
+    const title = 'Perbandingan Rata-rata Kehadiran per Kegiatan';
+    const allKebaktianSheets = ['Keb. Minggu', 'Keb. Kategorial', 'Pers. Kategorial', 'Pers. Lainnya', 'Perayaan'];
+    
+    const currentYearStr = String(yoyData.currentYear);
+    const prevYearStr = String(yoyData.prevYear);
+
+    const activities: Record<string, { curr: number, prev: number }> = {};
+
+    allKebaktianSheets.forEach(sheetName => {
+      if (yearlyData[sheetName]) {
+        yearlyData[sheetName].forEach((row: any) => {
+          const yearMatch = String(row.Tanggal).match(/20\d{2}/);
+          if (yearMatch) {
+            const yearStr = yearMatch[0];
+            const jam = row.Jam || 'Umum';
+            const label = `${sheetName.replace('Keb. ', '').replace('Pers. ', '')} - ${jam}`;
+            
+            if (!activities[label]) {
+              activities[label] = { curr: 0, prev: 0 };
+            }
+            if (yearStr === currentYearStr) {
+              activities[label].curr = row['Total Kehadiran'] || 0;
+            } else if (yearStr === prevYearStr) {
+              activities[label].prev = row['Total Kehadiran'] || 0;
+            }
+          }
+        });
+      }
+    });
+
+    const chartData = Object.keys(activities).map(label => ({
+      name: label,
+      'Tahun Kini': activities[label].curr,
+      'Tahun Lalu': activities[label].prev,
+    })).filter(d => d['Tahun Kini'] > 0 || d['Tahun Lalu'] > 0);
+
+    const hasData = chartData.length > 0;
+    
+    const chart = hasData ? (
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 120 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <XAxis dataKey="name" stroke="#A0AEC0" tick={{ fill: '#A0AEC0', fontSize: 11 }} angle={-45} textAnchor="end" interval={0} />
+          <YAxis stroke="#A0AEC0" tick={{ fill: '#A0AEC0' }} />
+          <Tooltip 
+            contentStyle={{ backgroundColor: '#1A202C', borderColor: '#2D3748', color: '#fff', borderRadius: '8px' }}
+            itemStyle={{ color: '#E2E8F0' }}
+          />
+          <Legend wrapperStyle={{ paddingTop: '20px' }} />
+          <Bar dataKey="Tahun Kini" fill={COLORS.blue} radius={[4, 4, 0, 0]} />
+          <Bar dataKey="Tahun Lalu" fill={COLORS.purple} radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    ) : null;
+
+    const description = 'Menampilkan perbandingan rata-rata kehadiran (per kegiatan) antara tahun ini dan tahun sebelumnya. Karena data rincian di tahun-tahun lalu belum tersedia secara utuh, chart ini berfokus pada data Rata-rata yang dilaporkan dalam lembar rekapitulasi.';
+
+    return { sources: allKebaktianSheets, title, isHidden: !hasData, icon: <TrendingUp color={COLORS.blue} />, description, chart, status: 'good' };
+  }, [yearlyData, yoyData]);
+
+
+
+  const allModules = [analisaKehadiran, analisa2, analisa3, analisa4, analisa7, analisa8, analisa10, analisa12, analisa13, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
+  
+  const cardsGood = allModules.filter(m => !m.isHidden && m.status === 'good');
+  const cardsWarning = allModules.filter(m => !m.isHidden && m.status === 'warning');
+  const cardsHidden = allModules.filter(m => m.isHidden);
+
+  const missingSources = Array.from(new Set(cardsHidden.flatMap(m => m.sources || [])));
+  const warnings = cardsWarning.map(m => m.title);
+
+
 
   if (!data || Object.keys(data).length === 0) {
     return <div className="glass-panel" style={{ padding: '24px', textAlign: 'center' }}>Silakan muat file Excel terlebih dahulu untuk melihat analisa.</div>;
@@ -1420,15 +1484,7 @@ const analisa3 = useMemo(() => {
               </div>
             </div>
 
-            {/* Total Kehadiran */}
-            <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Akumulasi Kehadiran Seluruh Kebaktian</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 600, margin: '4px 0', color: 'var(--text-primary)' }}>{yoyData.kehadiran.curr.toLocaleString('id-ID')}</div>
-              <div style={{ fontSize: '0.85rem', color: yoyData.kehadiran.trend.isPositive === true ? COLORS.green : yoyData.kehadiran.trend.isPositive === false ? COLORS.red : 'var(--text-secondary)' }}>
-                {yoyData.kehadiran.trend.isPositive === true ? '▲ ' : yoyData.kehadiran.trend.isPositive === false ? '▼ ' : ''}
-                {yoyData.kehadiran.trend.text}
-              </div>
-            </div>
+            
 
             {/* Total Penerimaan */}
             <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>

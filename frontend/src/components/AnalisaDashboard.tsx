@@ -1261,7 +1261,6 @@ const analisa3 = useMemo(() => {
     // Di parser.ts, "Akumulasi (Tahun Lalu)" adalah col E, "Akumulasi" adalah col I
     let uangCurr = 0;
     let uangPrev = 0;
-    let currentYearUang = 0;
     
     if (data['UANG'] && data['UANG'].length > 0) {
       // Cari tahun terbaru dari data UANG
@@ -1271,7 +1270,6 @@ const analisa3 = useMemo(() => {
         if (!isNaN(y)) yearsSet.add(y);
       });
       const maxYear = Math.max(...Array.from(yearsSet));
-      currentYearUang = maxYear;
       
       // Ambil akumulasi terakhir dari baris Total Penerimaan (biasanya No = 14)
       const lastMonthRecords = data['UANG'].filter((r: any) => parseInt(String(r.Tanggal).split('-')[0]) === maxYear);
@@ -1309,7 +1307,6 @@ const analisa3 = useMemo(() => {
     // Berdasarkan "kolom B, C, D row 46-48" (Pertumbuhan Jemaat)
     let mutasiCurr = 0;
     let mutasiPrev = 0;
-    let currentYearMutasi = 0;
 
     if (data['Mutasi'] && data['Mutasi'].hasil) {
       const pertumbuhanRows = data['Mutasi'].hasil.filter((r: any) => String(r.Kategori).toLowerCase().includes('pertumbuhan'));
@@ -1318,7 +1315,6 @@ const analisa3 = useMemo(() => {
         // pRow punya keys tahun, misal 2024, 2025
         const keys = Object.keys(pRow).filter(k => k.match(/20\d{2}/)).map(Number).sort((a,b) => b - a);
         if (keys.length > 0) {
-          currentYearMutasi = keys[0];
           mutasiCurr = pRow[keys[0]] || 0;
           if (keys.length > 1) {
             mutasiPrev = pRow[keys[1]] || 0;

@@ -1312,8 +1312,12 @@ const analisa3 = useMemo(() => {
       const pertumbuhanRows = data['Mutasi'].hasil.filter((r: any) => String(r.Kategori).toLowerCase().includes('pertumbuhan'));
       if (pertumbuhanRows.length > 0) {
         const pRow = pertumbuhanRows[0];
-        // pRow punya keys tahun, misal 2024, 2025
-        const keys = Object.keys(pRow).filter(k => k.match(/20\d{2}/)).map(Number).sort((a,b) => b - a);
+        const keys = Object.keys(pRow).filter(k => k.match(/20\d{2}/));
+        keys.sort((a, b) => {
+          const yearA = parseInt(a.match(/20\d{2}/)![0]);
+          const yearB = parseInt(b.match(/20\d{2}/)![0]);
+          return yearB - yearA;
+        });
         if (keys.length > 0) {
           mutasiCurr = pRow[keys[0]] || 0;
           if (keys.length > 1) {

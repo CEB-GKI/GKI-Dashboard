@@ -277,6 +277,7 @@ function App() {
                   }} 
                   style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', padding: '8px' }}
                   title="Reset Default Link"
+                  aria-label="Reset Default Link"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -438,6 +439,7 @@ function App() {
                           onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
                           onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
                           title="Hapus dari riwayat"
+                          aria-label="Hapus dari riwayat"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -595,6 +597,7 @@ function App() {
                 localStorage.setItem('hideInstallPrompt', 'true');
               }}
               style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', padding: 0, cursor: 'pointer' }}
+              aria-label="Tutup instalasi aplikasi"
             >
               ✕
             </button>

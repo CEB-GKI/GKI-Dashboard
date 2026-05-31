@@ -58,6 +58,7 @@ export function FullscreenWrapper({ children, className = '', style = {} }: { ch
           gap: '8px'
         }}
         title={isFullscreen ? "Keluar Layar Penuh (ESC)" : "Layar Penuh"}
+        aria-label={isFullscreen ? "Keluar Layar Penuh (ESC)" : "Layar Penuh"}
       >
         {isFullscreen ? (
           <>

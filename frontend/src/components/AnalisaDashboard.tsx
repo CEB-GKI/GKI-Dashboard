@@ -361,7 +361,7 @@ const analisa3 = useMemo(() => {
       
       if (growthDM < -10) {
         isWarning = true;
-        const addMsg = `Terdapat penyusutan pada keluarga muda usia 31-39 sebesar ${growthDM.toFixed(1)}% (fenomena 'the missing middle'). Gereja disarankan melakukan survei jemaat terkait relevansi pelayanan/fasilitas/Sekolah Minggu.`;
+        const addMsg = `Terdapat penyusutan pada dewasa muda usia 31-39 sebesar ${growthDM.toFixed(1)}% (fenomena 'the missing middle'). Gereja disarankan melakukan survei jemaat terkait relevansi pelayanan/fasilitas/Sekolah Minggu.`;
         warningReason = warningReason ? warningReason + " " + addMsg : addMsg;
       }
     }
@@ -369,7 +369,7 @@ const analisa3 = useMemo(() => {
     const table = (
       <table className="data-table">
         <thead>
-          <tr><th>Tahun</th><th>Pemuda (20-30)</th><th>Keluarga Muda (31-39)</th><th>Lansia (&gt;60)</th></tr>
+          <tr><th>Tahun</th><th>Pemuda (20-30)</th><th>Dewasa Muda (31-39)</th><th>Lansia (&gt;60)</th></tr>
         </thead>
         <tbody>
           {chartData.map((row: any, i: number) => (
@@ -388,15 +388,15 @@ const analisa3 = useMemo(() => {
           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
           <Legend content={UniversalLegend} />
           <Bar dataKey="Pemuda" fill={COLORS.blue} radius={[4, 4, 0, 0]} name="Pemuda (20-30)" />
-          <Bar dataKey="DewasaMuda" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Keluarga Muda (31-39)" />
+          <Bar dataKey="DewasaMuda" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Dewasa Muda (31-39)" />
           <Bar dataKey="Lansia" fill={COLORS.purple} radius={[4, 4, 0, 0]} name="Lansia (>60)" />
         </BarChart>
       </ResponsiveContainer>
     );
 
-    const description = "Memantau kelangsungan regenerasi gereja dengan membandingkan kelompok usia Pemuda, Keluarga Muda, dan Lansia dari data DIRI.";
+    const description = "Memantau kelangsungan regenerasi gereja dengan membandingkan kelompok usia Pemuda, Dewasa Muda, dan Lansia dari data DIRI.";
     const dynamicText = chartData.length > 0 
-      ? `Rasio Pemuda terhadap Lansia adalah ${ratioPemuda.toFixed(2)}, dan laju perubahan Keluarga Muda tercatat ${growthDM.toFixed(1)}%.`
+      ? `Rasio Pemuda terhadap Lansia adalah ${ratioPemuda.toFixed(2)}, dan laju perubahan Dewasa Muda tercatat ${growthDM.toFixed(1)}%.`
       : `Menghitung data demografi...`;
       
     const alertText = isWarning ? warningReason : null;

@@ -341,7 +341,7 @@ export const MutasiDashboard: React.FC<MutasiDataProps> = ({ data, churchName })
               <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px' }}>
                 <h4 style={{ margin: '0 0 12px 0', fontSize: '1rem', color: '#10b981', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span>Keterangan untuk: {clickedCategory}</span>
-                  <button onClick={() => setClickedCategory(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.2rem' }}>×</button>
+                  <button onClick={() => setClickedCategory(null)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.2rem' }} aria-label="Tutup keterangan">×</button>
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {relevantKeterangan.map((ket, idx) => (

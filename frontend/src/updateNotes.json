@@ -1,5 +1,13 @@
 [
   {
+    "timestamp": "1 Juni 2026",
+    "changes": [
+      "Perbaikan Bug: Menyempurnakan pemisahan kategori 'Kebaktian Kategorial' dan 'Persekutuan Kategorial' agar data kehadiran tidak saling tumpang tindih/hilang.",
+      "Perbaikan UI: Mengganti istilah 'Keluarga Muda' menjadi 'Dewasa Muda' pada modul analisa regenerasi (Missing Middle).",
+      "Perbaikan UI: Memasukkan tabel ringkasan secara utuh ke dalam mode layar penuh (Fullscreen) pada semua halaman grafik."
+    ]
+  },
+  {
     "timestamp": "28 Mei 2026",
     "changes": [
       "Fitur Baru: Layar penuh (Fullscreen) untuk setiap grafik analisa, memungkinkan fokus penuh pada metrik tunggal.",

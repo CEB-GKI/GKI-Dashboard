@@ -138,7 +138,12 @@ Aplikasi ini telah dikompilasi secara canggih menjadi satu buah berkas HTML mand
 
 ## 📝 Catatan Rilis & Riwayat Build Terbaru
 
-### Versi Terbaru (28 Mei 2026)
+### Versi Terbaru (1 Juni 2026)
+- Perbaikan Bug: Menyempurnakan pemisahan kategori 'Kebaktian Kategorial' dan 'Persekutuan Kategorial' agar data kehadiran tidak saling tumpang tindih/hilang.
+- Perbaikan UI: Mengganti istilah 'Keluarga Muda' menjadi 'Dewasa Muda' pada modul analisa regenerasi (Missing Middle).
+- Perbaikan UI: Memasukkan tabel ringkasan secara utuh ke dalam mode layar penuh (Fullscreen) pada semua halaman grafik.
+
+### Versi Sebelumnya (28 Mei 2026)
 - Fitur Baru: Layar penuh (Fullscreen) untuk setiap grafik analisa, memungkinkan fokus penuh pada metrik tunggal.
 - Perbaikan UI: Modul Perbandingan Rata-rata Kehadiran kini ditampilkan dalam tata letak khusus layar-penuh beserta tabel ringkasannya.
 - Optimalisasi Export: Kompresi cerdas pada PDF/PPTX (beralih ke format JPEG) dan penurunan skala gambar untuk memangkas drastis ukuran file (turun >75%).

@@ -10,7 +10,7 @@
     "build:html": "tsc -b && vite build --mode singlefile",
     "postbuild:html": "node scripts/cleanup.cjs",
     "build": "npm run build:server",
-    "postbuild": "node scripts/cleanup.cjs && cd .. && git add . && git commit -m \"build: automatic update after build\" && git push origin main",
+    "postbuild": "node scripts/cleanup.cjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

@@ -1364,7 +1364,9 @@ const analisa3 = useMemo(() => {
           if (yearMatch) {
             const yearStr = yearMatch[0];
             const jam = row.Jam || 'Umum';
-            const label = `${sheetName.replace('Keb. ', '').replace('Pers. ', '')} - ${jam}`;
+            const type = sheetName.includes('Keb.') ? 'Kebaktian ' : sheetName.includes('Pers.') ? 'Persekutuan ' : '';
+            const base = sheetName.replace('Keb. ', '').replace('Pers. ', '');
+            const label = `${type}${base} - ${jam}`;
             
             if (!activities[label]) {
               activities[label] = { curr: 0, prev: 0 };

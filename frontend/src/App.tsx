@@ -303,7 +303,7 @@ function App() {
               disabled={loading}
               style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', padding: '8px', fontSize: '0.85rem' }}
             >
-              <Upload size={16} /> Unggah Lokal
+              {loading ? <RefreshCw className="animate-spin" size={16} /> : <Upload size={16} />} Unggah Lokal
             </button>
           </div>
 

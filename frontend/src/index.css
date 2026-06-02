@@ -420,3 +420,26 @@ select option {
 .data-table tbody tr:last-child td {
   border-bottom: none;
 }
+
+/* Accessibility - Focus Visible */
+.btn:focus-visible,
+.nav-link:focus-visible,
+button:focus-visible,
+.btn-icon:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

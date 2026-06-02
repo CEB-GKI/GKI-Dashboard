@@ -138,7 +138,11 @@ Aplikasi ini telah dikompilasi secara canggih menjadi satu buah berkas HTML mand
 
 ## 📝 Catatan Rilis & Riwayat Build Terbaru
 
-### Versi Terbaru (1 Juni 2026)
+### Versi Terbaru (2 Juni 2026)
+- Perbaikan Bug: Menyempurnakan logika parser sheet RAPAT agar tidak keliru membaca Tabel Ringkasan Bulanan sebagai data harian duplikat (ghost data).
+- Pemeliharaan: Menambahkan semua script .bat ke dalam .gitignore agar diabaikan oleh Git, menjaga privasi alur kerja (workflow) lokal pengguna.
+
+### Versi Sebelumnya (1 Juni 2026)
 - Perbaikan Bug: Menyempurnakan pemisahan kategori 'Kebaktian Kategorial' dan 'Persekutuan Kategorial' agar data kehadiran tidak saling tumpang tindih/hilang.
 - Perbaikan UI: Mengganti istilah 'Keluarga Muda' menjadi 'Dewasa Muda' pada modul analisa regenerasi (Missing Middle).
 - Perbaikan UI: Memasukkan tabel ringkasan secara utuh ke dalam mode layar penuh (Fullscreen) pada semua halaman grafik.

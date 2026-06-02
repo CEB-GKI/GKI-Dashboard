@@ -135,6 +135,8 @@ function parseRapat(sheetData: any[][]) {
   const yearly: any[] = [];
   let currentDate = "Unknown Date";
   let isResume = false;
+  let isMonthlySummary = false;
+  let headerCount = 0;
 
   for (let idx = 0; idx < sheetData.length; idx++) {
     const row = sheetData[idx] || [];
@@ -142,20 +144,43 @@ function parseRapat(sheetData: any[][]) {
     const col0Str = String(row[0] ?? '').trim().toLowerCase();
     const col1Str = String(row[1] ?? '').trim().toLowerCase();
     
+    if (col0Str.includes('indikator (kuantitatif) persembahan tenaga')) {
+      headerCount++;
+      if (headerCount > 1) {
+        isMonthlySummary = true;
+      }
+    }
+
     if (col0Str.includes('resume') || col1Str.includes('resume') || col0Str.includes('periode') || col1Str.includes('periode') || col0Str.includes('rekapitulasi') || col1Str.includes('rekapitulasi')) {
       isResume = true;
+      isMonthlySummary = false;
       continue;
     }
+
+    if (isMonthlySummary) {
+      continue;
+    }
+
+    const jamTemp = String(row[1] || '').trim();
+    const jamLowerTemp = jamTemp.toLowerCase();
+    const isSkipRow = !jamTemp || jamLowerTemp.includes('rata-rata') || jamLowerTemp.includes('jumlah') || jamLowerTemp.includes('diperiksa') || jamLowerTemp.includes('pnt.') || jamLowerTemp.includes('pic ') || jamLowerTemp.includes('jenis persidangan');
+
     
+    if (isSkipRow) {
+      currentDate = "Unknown Date";
+    }
+
     if (!isResume) {
-      if (typeof row[0] === 'number' && row[0] > 40000) {
-        const date = new Date(Math.round((row[0] - 25569) * 86400 * 1000));
-        currentDate = date.toISOString().split('T')[0];
-      } else {
-        const col0 = String(row[0] ?? '').trim();
-        if (col0 && col0 !== "nan" && col0 !== "None") {
-          if (col0.includes("202") || col0.includes("-")) {
-            currentDate = col0.split(" ")[0];
+      if (!isSkipRow) {
+        if (typeof row[0] === 'number' && row[0] > 40000) {
+          const date = new Date(Math.round((row[0] - 25569) * 86400 * 1000));
+          currentDate = date.toISOString().split('T')[0];
+        } else {
+          const col0 = String(row[0] ?? '').trim();
+          if (col0 && col0 !== "nan" && col0 !== "None") {
+            if (col0.includes("202") || col0.includes("-")) {
+              currentDate = col0.split(" ")[0];
+            }
           }
         }
       }

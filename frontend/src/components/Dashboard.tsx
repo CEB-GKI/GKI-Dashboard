@@ -48,7 +48,16 @@ interface DashboardProps {
   churchName: string;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ data, yearlyData = [], sheetName, churchName }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData = [], sheetName, churchName }) => {
+  const data = useMemo(() => {
+    if (!rawData) return [];
+    return rawData.filter(row => {
+      const d = row['Tanggal'];
+      if (d && typeof d === 'string' && !d.includes('-')) return false;
+      return true;
+    });
+  }, [rawData]);
+
   const dashboardRef = useRef<HTMLDivElement>(null);
 
   const exportPDF = () => _exportPDF(dashboardRef, churchName, sheetName);

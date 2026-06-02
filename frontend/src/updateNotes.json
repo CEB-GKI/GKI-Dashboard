@@ -1,5 +1,12 @@
 [
   {
+    "timestamp": "2 Juni 2026",
+    "changes": [
+      "Perbaikan Bug: Menyempurnakan logika parser sheet RAPAT agar tidak keliru membaca Tabel Ringkasan Bulanan sebagai data harian duplikat (ghost data).",
+      "Pemeliharaan: Menambahkan semua script .bat ke dalam .gitignore agar diabaikan oleh Git, menjaga privasi alur kerja (workflow) lokal pengguna."
+    ]
+  },
+  {
     "timestamp": "1 Juni 2026",
     "changes": [
       "Perbaikan Bug: Menyempurnakan pemisahan kategori 'Kebaktian Kategorial' dan 'Persekutuan Kategorial' agar data kehadiran tidak saling tumpang tindih/hilang.",

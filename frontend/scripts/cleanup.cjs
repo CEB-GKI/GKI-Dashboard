@@ -24,3 +24,15 @@ try {
 } catch (error) {
     console.error('Error during cleanup:', error.message);
 }
+
+try {
+    const distHtmlPath = path.join(__dirname, '..', 'dist', 'index.html');
+    const targetHtmlPath = path.join(rootDir, 'GKI_Dashboard.html');
+    
+    if (fs.existsSync(distHtmlPath)) {
+        fs.copyFileSync(distHtmlPath, targetHtmlPath);
+        console.log(`Successfully copied build output to ${targetHtmlPath}`);
+    }
+} catch (error) {
+    console.error('Error copying html file:', error.message);
+}

@@ -139,6 +139,9 @@ Aplikasi ini telah dikompilasi secara canggih menjadi satu buah berkas HTML mand
 ## 📝 Catatan Rilis & Riwayat Build Terbaru
 
 ### Versi Terbaru (2 Juni 2026)
+- Fitur Baru: Menambahkan modul Analisa DIRI (Kapabilitas Manusia, Proporsi Pelayanan, Keberagaman Budaya, Tren Demografi).
+- Perbaikan UI: Menghapus duplikasi grafik Piramida Penduduk pada modul analisa karena telah dipusatkan pada tab DIRI.
+- Otomatisasi: Menambahkan script pre-build interaktif untuk merekam catatan rilis (changelog) sebelum kompilasi npm.
 - Perbaikan Bug: Menyempurnakan logika parser sheet RAPAT agar tidak keliru membaca Tabel Ringkasan Bulanan sebagai data harian duplikat (ghost data).
 - Pemeliharaan: Menambahkan semua script .bat ke dalam .gitignore agar diabaikan oleh Git, menjaga privasi alur kerja (workflow) lokal pengguna.
 

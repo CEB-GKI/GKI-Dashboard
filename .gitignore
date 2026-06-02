@@ -10,3 +10,4 @@ scratch/
 *.xlsx
 *.xls
 *.bat
+frontend/scripts/prebuild-record.cjs

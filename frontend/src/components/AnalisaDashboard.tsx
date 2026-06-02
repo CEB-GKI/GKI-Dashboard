@@ -1,6 +1,6 @@
 import { exportPDF as _exportPDF, exportPPTX as _exportPPTX } from '../utils/exportUtils';
 import { useMemo, useState, useRef } from 'react';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { FullscreenWrapper }
 from './FullscreenWrapper';
 import { AlertTriangle, Info, CheckCircle, TrendingUp, Users, FileText, Download } from 'lucide-react';
@@ -1393,9 +1393,284 @@ const analisa3 = useMemo(() => {
     return { chartData, hasData, title, description, sources: allKebaktianSheets };
   }, [yearlyData, yoyData]);
 
+  const analisa15 = useMemo(() => {
+    const title = 'Peta Kapabilitas dan Modal Manusia (Human Capital Analysis)';
+    const profesi = data['DIRI']?.profesi || [];
+    if (profesi.length === 0) return { sources: ['Data DIRI (Profesi)'], isHidden: true, title };
 
+    const latestData = [...profesi].reverse().find(d => d.Total > 0) || profesi[profesi.length - 1];
+    const year = latestData.Tahun;
 
-  const allModules = [analisa2, analisa3, analisa4, analisa7, analisa8, analisa10, analisa12, analisa13, analisa18].filter((m: any) => m && !excludedTitles.includes(m.title));
+    const skipKeys = ['Tahun', 'Total'];
+    const chartData = Object.keys(latestData)
+      .filter(k => !skipKeys.includes(k) && latestData[k] > 0)
+      .map(k => ({ name: k, value: latestData[k] }))
+      .sort((a, b) => b.value - a.value);
+
+    const hasData = chartData.length > 0;
+    
+    const top3 = chartData.slice(0, 3);
+    const totalProfesi = chartData.reduce((acc, curr) => acc + curr.value, 0);
+
+    const colors = [COLORS.blue, COLORS.purple, COLORS.green, COLORS.orange, COLORS.teal, '#f472b6', '#6366f1', '#14b8a6', '#f59e0b'];
+
+    const table = (
+      <table className="data-table">
+        <thead>
+          <tr><th>Profesi / Pekerjaan</th><th>Jumlah Jemaat</th><th>Persentase</th></tr>
+        </thead>
+        <tbody>
+          {chartData.map((row: any, i: number) => (
+            <tr key={i}>
+              <td>{row.name}</td>
+              <td>{row.value}</td>
+              <td>{totalProfesi > 0 ? ((row.value / totalProfesi) * 100).toFixed(1) : 0}%</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+
+    const chart = (
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={100}
+            paddingAngle={2}
+            dataKey="value"
+            label={({ name, percent }: any) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+          >
+            {chartData.map((_entry, index) => (
+              <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+            ))}
+          </Pie>
+          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+        </PieChart>
+      </ResponsiveContainer>
+    );
+
+    const description = "Melihat proporsi profesi dominan di dalam gereja. Data ini krusial untuk pendekatan program pelayanan, pendanaan, dan rekrutmen sukarelawan.";
+    const dynamicText = top3.length > 0
+      ? `Tiga profesi terbanyak jemaat pada tahun ${year} adalah ${top3.map(t => `${t.name} (${((t.value/totalProfesi)*100).toFixed(1)}%)`).join(', ')}.`
+      : `Menghitung data profesi...`;
+
+    return { sources: ['Data DIRI (Profesi)'], isHidden: !hasData, title, icon: <FileText color={COLORS.purple} />, description, dynamicText, chart, table, status: 'good' };
+  }, [data]);
+
+  const analisa16 = useMemo(() => {
+    const title = 'Analisis Proporsionalitas Pelayanan (Ministry Load Analysis)';
+    const massa = data['DIRI']?.massa || [];
+    if (massa.length === 0) return { sources: ['Data DIRI (Massa Komisi)'], isHidden: true, title };
+
+    const latestData = [...massa].reverse().find(d => d.Total > 0) || massa[massa.length - 1];
+    
+    const skipKeys = ['Tahun', 'Total'];
+    const chartData = Object.keys(latestData)
+      .filter(k => !skipKeys.includes(k) && latestData[k] > 0)
+      .map(k => ({ name: k, Jumlah: latestData[k] }));
+
+    const hasData = chartData.length > 0;
+    const totalMassa = chartData.reduce((acc, curr) => acc + curr.Jumlah, 0);
+
+    const table = (
+      <table className="data-table">
+        <thead>
+          <tr><th>Komisi / Kategori Usia</th><th>Jumlah Jiwa</th><th>Proporsi Beban Pelayanan</th></tr>
+        </thead>
+        <tbody>
+          {chartData.map((row: any, i: number) => (
+             <tr key={i}>
+               <td>{row.name}</td>
+               <td>{row.Jumlah}</td>
+               <td>{totalMassa > 0 ? ((row.Jumlah / totalMassa) * 100).toFixed(1) : 0}%</td>
+             </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+
+    const chart = (
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" tick={{ fontSize: 11 }} interval={0} />
+          <YAxis stroke="rgba(255,255,255,0.5)" />
+          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+          <Legend content={UniversalLegend} />
+          <Bar dataKey="Jumlah" fill={COLORS.teal} radius={[4, 4, 0, 0]} name="Jumlah Jiwa Dilayani" />
+        </BarChart>
+      </ResponsiveContainer>
+    );
+
+    const description = "Memetakan jumlah jiwa yang dilayani oleh tiap komisi untuk membantu memastikan Rencana Anggaran Belanja (RAB) dan distribusi SDM proporsional.";
+    const dynamicText = chartData.length > 0
+      ? `Proporsi jemaat terbesar saat ini berada di kategori ${chartData.reduce((prev, curr) => prev.Jumlah > curr.Jumlah ? prev : curr).name} dengan total ${chartData.reduce((prev, curr) => prev.Jumlah > curr.Jumlah ? prev : curr).Jumlah} jiwa.`
+      : `Menghitung data massa yang dilayani...`;
+
+    return { sources: ['Data DIRI (Massa Komisi)'], isHidden: !hasData, title, icon: <AlertTriangle color={COLORS.teal} />, description, dynamicText, chart, table, status: 'good' };
+  }, [data]);
+
+  const analisa17 = useMemo(() => {
+    const title = 'Analisis Diversitas Budaya (Cultural & Inclusivity Analysis)';
+    const etnis = data['DIRI']?.etnis || [];
+    if (etnis.length === 0) return { sources: ['Data DIRI (Komposisi Etnis)'], isHidden: true, title };
+
+    const latestData = [...etnis].reverse().find(d => d.Total > 0) || etnis[etnis.length - 1];
+
+    const skipKeys = ['Tahun', 'Total'];
+    const chartData = Object.keys(latestData)
+      .filter(k => !skipKeys.includes(k) && latestData[k] > 0)
+      .map(k => ({ name: k, value: latestData[k] }))
+      .sort((a, b) => b.value - a.value);
+
+    const hasData = chartData.length > 0;
+    const totalEtnis = chartData.reduce((acc, curr) => acc + curr.value, 0);
+    const topCat = chartData.length > 0 ? chartData[0] : null;
+
+    const colors = [COLORS.orange, COLORS.blue, COLORS.green, COLORS.purple, COLORS.teal, '#f472b6', '#6366f1', '#14b8a6', '#f59e0b'];
+
+    const table = (
+      <table className="data-table">
+        <thead>
+          <tr><th>Kelompok Etnis</th><th>Jumlah Jemaat</th><th>Persentase</th></tr>
+        </thead>
+        <tbody>
+          {chartData.map((row: any, i: number) => (
+             <tr key={i}>
+               <td>{row.name}</td>
+               <td>{row.value}</td>
+               <td>{totalEtnis > 0 ? ((row.value / totalEtnis) * 100).toFixed(1) : 0}%</td>
+             </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+
+    const chart = (
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+            dataKey="value"
+            label={({ name, percent }: any) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+          >
+            {chartData.map((_entry, index) => (
+              <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+            ))}
+          </Pie>
+          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+        </PieChart>
+      </ResponsiveContainer>
+    );
+
+    const description = "Memetakan proporsi etnis jemaat untuk memastikan gaya penyampaian khotbah, acara, dan dinamika pelayanan merangkul semua kelompok budaya.";
+    const dynamicText = topCat
+      ? `Komposisi jemaat didominasi oleh etnis ${topCat.name} (${((topCat.value/totalEtnis)*100).toFixed(1)}%), namun keragaman etnis lainnya tetap perlu diakomodasi untuk menjaga eksklusivitas.`
+      : `Menghitung data etnis...`;
+
+    return { sources: ['Data DIRI (Komposisi Etnis)'], isHidden: !hasData, title, icon: <Users color={COLORS.orange} />, description, dynamicText, chart, table, status: 'good' };
+  }, [data]);
+
+  const analisa19 = useMemo(() => {
+    const title = 'Tren Pergeseran Demografi Tahunan (Year-over-Year Demographical Shift)';
+    const diriMassa = data['DIRI']?.massa || [];
+    if (diriMassa.length < 2) return { sources: ['Data DIRI (Massa)'], isHidden: true, title };
+
+    const yearsData = [...diriMassa].slice(-3); // Get up to last 3 years
+    const latestData = yearsData[yearsData.length - 1];
+    const prevData = yearsData[yearsData.length - 2];
+    
+    const skipKeys = ['Tahun', 'Total'];
+    const categories = Object.keys(latestData).filter(k => !skipKeys.includes(k));
+
+    const chartData = categories.map(cat => {
+      const currentVal = latestData[cat] || 0;
+      const prevVal = prevData[cat] || 0;
+      const shift = prevVal > 0 ? ((currentVal - prevVal) / prevVal) * 100 : 0;
+      return {
+        name: cat,
+        'Tahun Lalu': prevVal,
+        'Tahun Ini': currentVal,
+        Pertumbuhan: parseFloat(shift.toFixed(1))
+      };
+    });
+
+    const hasData = chartData.some(d => d['Tahun Ini'] > 0 || d['Tahun Lalu'] > 0);
+    
+    let warningCat = '';
+    let warningShift = 0;
+    
+    chartData.forEach(d => {
+      if (d.Pertumbuhan < -10 && d['Tahun Lalu'] > 10) {
+        if (d.Pertumbuhan < warningShift) {
+          warningShift = d.Pertumbuhan;
+          warningCat = d.name;
+        }
+      }
+    });
+
+    const isWarning = warningCat !== '';
+
+    const table = (
+      <table className="data-table">
+        <thead>
+          <tr><th>Kategori Usia</th><th>{prevData.Tahun}</th><th>{latestData.Tahun}</th><th>Pertumbuhan YoY</th></tr>
+        </thead>
+        <tbody>
+          {chartData.map((row: any, i: number) => {
+            const isNegative = row.Pertumbuhan < 0;
+            return (
+              <tr key={i}>
+                <td>{row.name}</td>
+                <td>{row['Tahun Lalu']}</td>
+                <td>{row['Tahun Ini']}</td>
+                <td style={{ color: isNegative ? COLORS.red : COLORS.green }}>
+                  {row.Pertumbuhan > 0 ? '+' : ''}{row.Pertumbuhan}%
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
+
+    const chart = (
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" tick={{ fontSize: 11 }} interval={0} />
+          <YAxis stroke="rgba(255,255,255,0.5)" />
+          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }} />
+          <Legend content={UniversalLegend} />
+          <Bar dataKey="Pertumbuhan" fill={COLORS.blue} radius={[4, 4, 0, 0]} name="Pertumbuhan YoY (%)">
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.Pertumbuhan < 0 ? COLORS.red : COLORS.green} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    );
+
+    const description = "Membaca peringatan dini (Warning Signs) dari pergeseran kelompok usia dari tahun ke tahun, seperti indikasi kebocoran pada kelompok tertentu.";
+    const dynamicText = isWarning
+      ? `Terdapat penurunan drastis pada kategori ${warningCat} sebesar ${warningShift}%. Ini memerlukan perhatian khusus.`
+      : `Secara keseluruhan, pergeseran demografi menunjukkan tren yang stabil tanpa penurunan ekstrem.`;
+
+    const alertText = isWarning
+      ? `Penurunan tajam terpantau pada kelompok ${warningCat} (${warningShift}%). Gereja disarankan untuk menyelidiki penyebab menyusutnya kelompok usia ini.`
+      : null;
+
+    return { sources: ['Data DIRI (Massa)'], isHidden: !hasData, title, icon: <TrendingUp color={COLORS.blue} />, description, dynamicText, chart, table, alertText, status: isWarning ? 'warning' : 'good' };
+  }, [data]);
+
+  const allModules = [analisa2, analisa3, analisa4, analisa7, analisa8, analisa10, analisa12, analisa13, analisa15, analisa16, analisa17, analisa18, analisa19].filter((m: any) => m && !excludedTitles.includes(m.title));
   
   const cardsGood = allModules.filter(m => !m.isHidden && m.status === 'good');
   const cardsWarning = allModules.filter(m => !m.isHidden && m.status === 'warning');

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build:server": "tsc -b && vite build --mode production",
-    "prebuild:html": "node scripts/sync-readme.cjs",
+    "prebuild:html": "node -e \"try{require('./scripts/prebuild-record.cjs')}catch(e){require('./scripts/sync-readme.cjs')}\"",
     "build:html": "tsc -b && vite build --mode singlefile",
     "postbuild:html": "node scripts/cleanup.cjs",
     "build": "npm run build:server",

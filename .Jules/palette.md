@@ -8,3 +8,7 @@
 ## 2024-06-03 - Loading States on Async Buttons
 **Learning:** Found that secondary async actions like 'Unggah Lokal' lacked loading indicators, creating an inconsistent experience since 'Tarik Data' had one. Missing loading states on file processing can make users think the app is unresponsive.
 **Action:** Add visual loading feedback (like a spinning icon) to all buttons that trigger asynchronous operations, especially those involving file parsing or network requests.
+
+## 2026-06-03 - Structural Headers as Labels
+**Learning:** Found an accessibility issue where a visually functional 'label' (Sumber Data) was marked up as a structural header (`<h3>`), leaving the adjacent input field detached from its descriptive text for screen readers. Using `aria-current="page"` on active sidebar links provides clear semantic context of the current state.
+**Action:** Convert structural headers to functional `<label>` elements with `htmlFor` when they are intended to caption an input, and consistently apply `aria-current="page"` to active navigation items.

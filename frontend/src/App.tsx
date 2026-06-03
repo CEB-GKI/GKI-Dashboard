@@ -247,12 +247,13 @@ function App() {
 
         <div className={`sidebar-content ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="url-input-container">
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <label htmlFor="gsheet-url" style={{ display: 'block', margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
               Sumber Data
-            </h3>
+            </label>
             <div style={{ position: 'relative' }}>
               <LinkIcon size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
               <input 
+                id="gsheet-url"
                 type="text" 
                 className="input-field" 
                 style={{ paddingLeft: '36px', fontSize: '0.85rem' }}
@@ -319,6 +320,7 @@ function App() {
                       key={sheet}
                       onClick={() => { setActiveSheet(sheet); setIsMobileMenuOpen(false); }}
                       className={`nav-link ${activeSheet === sheet ? 'active' : ''}`}
+                      aria-current={activeSheet === sheet ? 'page' : undefined}
                     >
                       {sheet}
                     </button>
@@ -336,6 +338,7 @@ function App() {
                       key={sheet}
                       onClick={() => { setActiveSheet(sheet); setIsMobileMenuOpen(false); }}
                       className={`nav-link ${activeSheet === sheet ? 'active' : ''}`}
+                      aria-current={activeSheet === sheet ? 'page' : undefined}
                     >
                       {sheet}
                     </button>
@@ -347,6 +350,7 @@ function App() {
                 <button 
                   onClick={() => { setActiveSheet('Analisa'); setIsMobileMenuOpen(false); }}
                   className={`nav-link ${activeSheet === 'Analisa' ? 'active' : ''}`}
+                  aria-current={activeSheet === 'Analisa' ? 'page' : undefined}
                   style={{ 
                     background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)', 
                     color: 'var(--text-primary)',
@@ -359,6 +363,7 @@ function App() {
                 <button 
                   onClick={() => { setActiveSheet('About'); setIsMobileMenuOpen(false); }}
                   className={`nav-link ${activeSheet === 'About' ? 'active' : ''}`}
+                  aria-current={activeSheet === 'About' ? 'page' : undefined}
                 >
                   ℹ️ About App
                 </button>

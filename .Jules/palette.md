@@ -12,3 +12,6 @@
 ## 2026-06-03 - Structural Headers as Labels
 **Learning:** Found an accessibility issue where a visually functional 'label' (Sumber Data) was marked up as a structural header (`<h3>`), leaving the adjacent input field detached from its descriptive text for screen readers. Using `aria-current="page"` on active sidebar links provides clear semantic context of the current state.
 **Action:** Convert structural headers to functional `<label>` elements with `htmlFor` when they are intended to caption an input, and consistently apply `aria-current="page"` to active navigation items.
+## 2024-05-18 - [Forms for Keyboard Submission]
+**Learning:** Wrapping input and button in a form element enables native "Enter" key submission, significantly improving keyboard accessibility and general UX. Must remember to add `type="button"` to secondary buttons in the form to prevent accidental submission.
+**Action:** Always evaluate if an input and button pairing should be a form.

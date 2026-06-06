@@ -250,40 +250,43 @@ function App() {
             <label htmlFor="gsheet-url" style={{ display: 'block', margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>
               Sumber Data
             </label>
-            <div style={{ position: 'relative' }}>
-              <LinkIcon size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-              <input 
-                id="gsheet-url"
-                type="text" 
-                className="input-field" 
-                style={{ paddingLeft: '36px', fontSize: '0.85rem' }}
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="URL Google Sheets..."
-              />
-            </div>
-            
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="btn" onClick={handleFetch} disabled={loading || !url.trim()} style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}>
-                {loading ? <RefreshCw className="animate-spin" size={16} /> : 'Tarik Data'}
-              </button>
+            <form onSubmit={(e) => { e.preventDefault(); handleFetch(); }} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '8px' }}>
+              <div style={{ position: 'relative' }}>
+                <LinkIcon size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                <input
+                  id="gsheet-url"
+                  type="text"
+                  className="input-field"
+                  style={{ paddingLeft: '36px', fontSize: '0.85rem', width: '100%' }}
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="URL Google Sheets..."
+                />
+              </div>
               
-              {hasDefaultUrl && (
-                <button 
-                  className="btn" 
-                  onClick={() => {
-                    localStorage.removeItem('defaultGsheetUrl');
-                    setHasDefaultUrl(false);
-                    setUrl('');
-                  }} 
-                  style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', padding: '8px' }}
-                  title="Reset Default Link"
-                  aria-label="Reset Default Link"
-                >
-                  <Trash2 size={16} />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button type="submit" className="btn" disabled={loading || !url.trim()} style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}>
+                  {loading ? <RefreshCw className="animate-spin" size={16} /> : 'Tarik Data'}
                 </button>
-              )}
-            </div>
+
+                {hasDefaultUrl && (
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => {
+                      localStorage.removeItem('defaultGsheetUrl');
+                      setHasDefaultUrl(false);
+                      setUrl('');
+                    }}
+                    style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', padding: '8px' }}
+                    title="Reset Default Link"
+                    aria-label="Reset Default Link"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+            </form>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '8px 0' }}>
               <div style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }}></div>

@@ -6,7 +6,7 @@ import { TenagaDashboard } from './components/TenagaDashboard';
 import { MutasiDashboard } from './components/MutasiDashboard';
 import { AnalisaDashboard } from './components/AnalisaDashboard';
 import updateNotes from './updateNotes.json';
-import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle, XCircle, Menu, X } from 'lucide-react';
+import { Activity, RefreshCw, Link as LinkIcon, WifiOff, Trash2, Upload, FileClock, CheckCircle, XCircle, Menu, X, AlertTriangle } from 'lucide-react';
 import { getHistory, saveHistory, deleteHistory, type HistoryItem } from './db';
 
 const isSingleFile = import.meta.env.VITE_APP_MODE === 'singlefile';
@@ -410,8 +410,14 @@ function App() {
 
         <main className="main-content">
           {error && (
-            <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#fbbf24', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
-              {error}
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="animate-fade-in"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#fbbf24', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}
+            >
+              <AlertTriangle size={20} style={{ flexShrink: 0 }} />
+              <div>{error}</div>
             </div>
           )}
 

@@ -15,3 +15,4 @@
 ## 2024-05-18 - [Forms for Keyboard Submission]
 **Learning:** Wrapping input and button in a form element enables native "Enter" key submission, significantly improving keyboard accessibility and general UX. Must remember to add `type="button"` to secondary buttons in the form to prevent accidental submission.
 **Action:** Always evaluate if an input and button pairing should be a form.
+## 2026-06-07 - Error State Alert Role\n**Learning:** When displaying dynamic error messages, wrapping them in a flex container with an icon makes them visually distinct. Adding `role="alert"` and `aria-live="assertive"` ensures they are immediately announced by screen readers without requiring focus.\n**Action:** Always include ARIA live regions and warning icons for temporary or dynamic error states.

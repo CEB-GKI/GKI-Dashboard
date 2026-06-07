@@ -549,6 +549,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                 </div>
                 
                 <select 
+                  aria-label="Filter Waktu"
                   value={timeFilter} 
                   onChange={(e) => setTimeFilter(e.target.value)}
                   style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
@@ -563,6 +564,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                     <span style={{ color: 'var(--text-secondary)' }}>mulai dari</span>
     
                     <select 
+                      aria-label="Mulai dari"
                       value={startPeriod} 
                       onChange={(e) => setStartPeriod(e.target.value)}
                       style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
@@ -585,6 +587,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                 </div>
                 
                 <select 
+                  aria-label="Filter Perayaan"
                   value={perayaanFilter} 
                   onChange={(e) => {
                     setPerayaanFilter(e.target.value);
@@ -612,6 +615,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                     ].map((comp, idx) => (
                       <select 
                         key={idx}
+                        aria-label={`Bandingkan perayaan ke-${idx + 1}`}
                         value={comp.val} 
                         onChange={(e) => comp.set(e.target.value)}
                         style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px', outline: 'none', fontSize: '0.9em' }}
@@ -634,6 +638,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                 </div>
                 
                 <select 
+                  aria-label="Jenis Kebaktian"
                   value={kategorialFilter} 
                   onChange={(e) => setKategorialFilter(e.target.value)}
                   style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
@@ -653,6 +658,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                 </div>
                 
                 <select 
+                  aria-label="Jenis Persidangan"
                   value={rapatFilter} 
                   onChange={(e) => setRapatFilter(e.target.value)}
                   style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
@@ -685,6 +691,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '12px' }}>
                       <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Metrik:</span>
                       <select 
+                        aria-label="Pilih Metrik"
                         value={selectedMetric} 
                         onChange={(e) => setSelectedMetric(e.target.value)}
                         style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
@@ -696,6 +703,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                         <>
                           <span style={{ color: 'var(--text-secondary)' }}>vs</span>
                           <select 
+                            aria-label="Pilih Metrik Pembanding"
                             value={compareMetric} 
                             onChange={(e) => setCompareMetric(e.target.value)}
                             style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
@@ -844,8 +852,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                   <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '12px' }}>
                         <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Metrik (Tahunan):</span>
-                        <select 
-                          value={yearlyMetric} 
+                        <select aria-label="Pilih Metrik Tahunan" value={yearlyMetric}
                           onChange={(e) => setYearlyMetric(e.target.value)}
                           style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
                         >
@@ -855,8 +862,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                         {sheetName !== 'Perayaan' && (
                           <>
                             <span style={{ color: 'var(--text-secondary)' }}>vs</span>
-                            <select 
-                              value={yearlyCompareMetric} 
+                            <select aria-label="Pilih Metrik Pembanding Tahunan" value={yearlyCompareMetric}
                               onChange={(e) => setYearlyCompareMetric(e.target.value)}
                               style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 12px', borderRadius: '8px', outline: 'none' }}
                             >
@@ -871,8 +877,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '12px', flexWrap: 'wrap' }}>
                         <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Filter Tahun:</span>
-                        <select 
-                          value={yearlyYearFilter} 
+                        <select aria-label="Filter Tahun" value={yearlyYearFilter}
                           onChange={(e) => {
                             setYearlyYearFilter(e.target.value);
                             if (e.target.value === 'Semua Tahun') setYearlyYearCompare('');
@@ -888,8 +893,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                         {yearlyYearFilter !== 'Semua Tahun' && (
                           <>
                             <span style={{ color: 'var(--text-secondary)', marginLeft: '8px' }}>vs</span>
-                            <select 
-                              value={yearlyYearCompare} 
+                            <select aria-label="Tahun Pembanding" value={yearlyYearCompare}
                               onChange={(e) => setYearlyYearCompare(e.target.value)}
                               style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px', outline: 'none', fontSize: '0.9em' }}
                             >
@@ -905,8 +909,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                       {sheetName === 'Perayaan' && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '12px', flexWrap: 'wrap' }}>
                           <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Filter Perayaan:</span>
-                          <select 
-                            value={yearlyPerayaanFilter} 
+                          <select aria-label="Filter Perayaan Tahunan" value={yearlyPerayaanFilter}
                             onChange={(e) => {
                               setYearlyPerayaanFilter(e.target.value);
                               if (e.target.value === 'Semua Perayaan') {
@@ -931,9 +934,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data: rawData, yearlyData 
                                 { val: yearlyPerayaanCompare2, set: setYearlyPerayaanCompare2 },
                                 { val: yearlyPerayaanCompare3, set: setYearlyPerayaanCompare3 }
                               ].map((comp, idx) => (
-                                <select 
-                                  key={idx}
-                                  value={comp.val} 
+                                <select key={idx} aria-label={`Bandingkan perayaan ke-${idx + 1}`} value={comp.val}
                                   onChange={(e) => comp.set(e.target.value)}
                                   style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '8px', borderRadius: '8px', outline: 'none', fontSize: '0.9em' }}
                                 >

@@ -15,3 +15,6 @@
 ## 2024-05-18 - [Forms for Keyboard Submission]
 **Learning:** Wrapping input and button in a form element enables native "Enter" key submission, significantly improving keyboard accessibility and general UX. Must remember to add `type="button"` to secondary buttons in the form to prevent accidental submission.
 **Action:** Always evaluate if an input and button pairing should be a form.
+## 2024-06-08 - Safety Confirmation on Destructive Actions
+**Learning:** Found that users could easily delete history items or remove the default Google Sheet URL by mistake because these destructive actions were missing confirmation prompts.
+**Action:** Always add simple `window.confirm` dialogs for any irreversible data removal action to prevent accidental data loss.

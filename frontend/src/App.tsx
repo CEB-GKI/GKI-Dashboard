@@ -265,7 +265,13 @@ function App() {
               </div>
               
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button type="submit" className="btn" disabled={loading || !url.trim()} style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}>
+                <button
+                  type="submit"
+                  className="btn"
+                  disabled={loading || !url.trim()}
+                  style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}
+                  title={!url.trim() ? "Masukkan URL Google Sheets terlebih dahulu" : "Ambil data dari Google Sheets"}
+                >
                   {loading ? <RefreshCw className="animate-spin" size={16} /> : 'Tarik Data'}
                 </button>
 
@@ -274,9 +280,11 @@ function App() {
                     type="button"
                     className="btn"
                     onClick={() => {
-                      localStorage.removeItem('defaultGsheetUrl');
-                      setHasDefaultUrl(false);
-                      setUrl('');
+                      if (window.confirm('Apakah Anda yakin ingin menghapus sumber data default ini?')) {
+                        localStorage.removeItem('defaultGsheetUrl');
+                        setHasDefaultUrl(false);
+                        setUrl('');
+                      }
                     }}
                     style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', padding: '8px' }}
                     title="Reset Default Link"
@@ -306,6 +314,7 @@ function App() {
               onClick={handleLocalUploadClick} 
               disabled={loading}
               style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)', padding: '8px', fontSize: '0.85rem' }}
+              title="Unggah file Excel (.xlsx) dari komputer lokal Anda"
             >
               {loading ? <RefreshCw className="animate-spin" size={16} /> : <Upload size={16} />} Unggah Lokal
             </button>
@@ -442,7 +451,12 @@ function App() {
                           <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-primary)' }}>{item.path}</span>
                         </div>
                         <button 
-                          onClick={(e) => { e.stopPropagation(); deleteHistory(item.id).then(loadHistory); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm('Hapus riwayat ini?')) {
+                              deleteHistory(item.id).then(loadHistory);
+                            }
+                          }}
                           style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
                           onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
                           onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}

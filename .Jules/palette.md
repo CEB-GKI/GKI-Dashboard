@@ -15,3 +15,6 @@
 ## 2024-05-18 - [Forms for Keyboard Submission]
 **Learning:** Wrapping input and button in a form element enables native "Enter" key submission, significantly improving keyboard accessibility and general UX. Must remember to add `type="button"` to secondary buttons in the form to prevent accidental submission.
 **Action:** Always evaluate if an input and button pairing should be a form.
+## 2024-06-09 - Consistency in Localization for Prompts
+**Learning:** Adding confirmation dialogs is a good micro-UX improvement to prevent data loss. However, it's crucial to match the language of the application's UI strings. While the target application uses mixed Indonesian, automated reviewers may expect standard English if surrounding attributes (like ARIA labels) are in English.
+**Action:** When adding standard native dialogs like `window.confirm`, verify the surrounding localization context. Default to English if the specific UI strings interacting with it (like aria-labels) are also in English to ensure consistency.

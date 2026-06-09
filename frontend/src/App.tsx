@@ -274,9 +274,11 @@ function App() {
                     type="button"
                     className="btn"
                     onClick={() => {
-                      localStorage.removeItem('defaultGsheetUrl');
-                      setHasDefaultUrl(false);
-                      setUrl('');
+                      if (window.confirm('Are you sure you want to remove this default link?')) {
+                        localStorage.removeItem('defaultGsheetUrl');
+                        setHasDefaultUrl(false);
+                        setUrl('');
+                      }
                     }}
                     style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#fca5a5', padding: '8px' }}
                     title="Reset Default Link"
@@ -442,7 +444,12 @@ function App() {
                           <span style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-primary)' }}>{item.path}</span>
                         </div>
                         <button 
-                          onClick={(e) => { e.stopPropagation(); deleteHistory(item.id).then(loadHistory); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm('Are you sure you want to remove this item from history?')) {
+                              deleteHistory(item.id).then(loadHistory);
+                            }
+                          }}
                           style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
                           onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
                           onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
